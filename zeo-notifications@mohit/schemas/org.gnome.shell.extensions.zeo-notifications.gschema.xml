@@ -9,5 +9,9 @@
       <default>350</default>
       <summary>Animation Duration (ms)</summary>
     </key>
+    <key name="bg-opacity" type="d">
+      <default>0.95</default>
+      <summary>Background Opacity (0.0 - 1.0)</summary>
+    </key>
   </schema>
 </schemalist>

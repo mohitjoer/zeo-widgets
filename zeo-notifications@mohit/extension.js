@@ -37,6 +37,10 @@ export default class ZeoNotificationsExtension extends Extension {
             this._bannerBin.translation_x = 0;
             this._bannerBin.translation_y = 50;
             this._bannerBin.opacity = 0;
+            
+            // Apply background opacity setting
+            const bgOpacity = ext._settings.get_double('bg-opacity');
+            this._bannerBin.style = `background-color: rgba(40, 40, 42, ${bgOpacity}) !important;`;
 
             this._bannerBin.ease({
                 translation_y: 0,

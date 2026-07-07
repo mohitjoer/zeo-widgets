@@ -25,5 +25,13 @@ export default class ZeoNotificationsPreferences extends ExtensionPreferences {
         });
         settings.bind('anim-duration', animRow, 'value', Gio.SettingsBindFlags.DEFAULT);
         genGroup.add(animRow);
+
+        const opacityRow = new Adw.SpinRow({
+            title: 'Background Opacity',
+            adjustment: new Gtk.Adjustment({ lower: 0.0, upper: 1.0, step_increment: 0.05 }),
+            digits: 2
+        });
+        settings.bind('bg-opacity', opacityRow, 'value', Gio.SettingsBindFlags.DEFAULT);
+        genGroup.add(opacityRow);
     }
 }
