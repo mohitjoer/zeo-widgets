@@ -2,6 +2,7 @@
   "uuid": "zeo-notifications@mohit",
   "name": "Zeo Notifications",
   "description": "Zeo lib notifications",
+  "url": "https://github.com/mohitjoer/zeo-widgets",
   "shell-version": [
     "45",
     "46",

@@ -319,10 +319,19 @@ class SystemMonitorWidget extends BaseWidget {
 
     _readIntelGpu() {
         try {
-            let [ok1, r1] = GLib.file_get_contents(
-                '/sys/class/drm/card2/gt/gt0/rps_act_freq_mhz');
-            let [ok2, r2] = GLib.file_get_contents(
-                '/sys/class/drm/card2/gt/gt0/rps_max_freq_mhz');
+            let actFile, maxFile;
+            for (let i = 0; i < 5; i++) {
+                let actPath = `/sys/class/drm/card${i}/gt/gt0/rps_act_freq_mhz`;
+                let maxPath = `/sys/class/drm/card${i}/gt/gt0/rps_max_freq_mhz`;
+                if (GLib.file_test(actPath, GLib.FileTest.EXISTS) && GLib.file_test(maxPath, GLib.FileTest.EXISTS)) {
+                    actFile = actPath;
+                    maxFile = maxPath;
+                    break;
+                }
+            }
+            if (!actFile) return [0, '—'];
+            let [ok1, r1] = GLib.file_get_contents(actFile);
+            let [ok2, r2] = GLib.file_get_contents(maxFile);
             if (!ok1 || !ok2) return [0, '—'];
             let act = parseInt(new TextDecoder().decode(r1));
             let max = parseInt(new TextDecoder().decode(r2));
