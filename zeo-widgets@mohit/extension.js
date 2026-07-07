@@ -11,16 +11,17 @@ import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 const RING_SIZE   = 80;    // canvas px
 const RING_RADIUS = 28;    // centre-of-stroke radius
 const RING_STROKE = 6;     // stroke width
-const UPDATE_SECS = 3;     // refresh interval
 
-/* Zeo-inspired colour pairs  { from:[r,g,b], to:[r,g,b] }    */
-const PALETTE = {
-    cpu:    { from: [1.00, 0.20, 0.25], to: [1.00, 0.40, 0.45] },   // Red/Pink
-    mem:    { from: [0.00, 0.83, 1.00], to: [0.00, 0.55, 1.00] },   // Cyan → Blue
-    disk:   { from: [1.00, 0.58, 0.00], to: [1.00, 0.78, 0.00] },   // Orange → Gold
-    intel:  { from: [0.20, 0.78, 0.35], to: [0.40, 0.90, 0.55] },   // Green
-    nvidia: { from: [0.69, 0.32, 0.87], to: [1.00, 0.18, 0.40] },   // Purple → Pink
-};
+function hexToRGB(hex) {
+    let r = parseInt(hex.slice(1, 3), 16) / 255.0;
+    let g = parseInt(hex.slice(3, 5), 16) / 255.0;
+    let b = parseInt(hex.slice(5, 7), 16) / 255.0;
+    return [r, g, b];
+}
+function getColorPal(hex) {
+    let c = hexToRGB(hex);
+    return { from: c, to: [Math.max(0, c[0]-0.2), Math.max(0, c[1]-0.2), Math.max(0, c[2]-0.2)] };
+}
 
 /* ── Cairo ring painter ──────────────────────────────────────── */
 function _paintRing(cr, width, height, pct, pal) {
@@ -120,6 +121,10 @@ class BaseWidget extends St.BoxLayout {
             return Clutter.EVENT_PROPAGATE;
 
         this._dragging = false;
+        if (this._settings) {
+            this._settings.set_int('pos-x', this.x);
+            this._settings.set_int('pos-y', this.y);
+        }
         return Clutter.EVENT_STOP;
     }
 }
@@ -206,12 +211,14 @@ class SystemMonitorWidget extends BaseWidget {
         GObject.registerClass(this);
     }
 
-    constructor() {
+    constructor(settings) {
         super({
             vertical: true,
             style_class: 'zeo-sysmon-card',
             x_align: Clutter.ActorAlign.CENTER,
         });
+        
+        this._settings = settings;
 
         // ── Ring row ────────────────────────────────────────────
         let row = new St.BoxLayout({
@@ -219,11 +226,11 @@ class SystemMonitorWidget extends BaseWidget {
             x_align: Clutter.ActorAlign.CENTER,
         });
 
-        this._cpuCell    = new RingCell('CPU',      PALETTE.cpu);
-        this._memCell    = new RingCell('Memory',   PALETTE.mem);
-        this._diskCell   = new RingCell('Disk',     PALETTE.disk);
-        this._intelCell  = new RingCell('Iris Xe',  PALETTE.intel);
-        this._nvidiaCell = new RingCell('RTX 3050', PALETTE.nvidia);
+        this._cpuCell    = new RingCell('CPU',      getColorPal(this._settings.get_string('cpu-color')));
+        this._memCell    = new RingCell('Memory',   getColorPal(this._settings.get_string('mem-color')));
+        this._diskCell   = new RingCell('Disk',     getColorPal(this._settings.get_string('disk-color')));
+        this._intelCell  = new RingCell('Iris Xe',  getColorPal(this._settings.get_string('intel-color')));
+        this._nvidiaCell = new RingCell('RTX 3050', getColorPal(this._settings.get_string('nvidia-color')));
 
         row.add_child(this._cpuCell.actor);
         row.add_child(this._memCell.actor);
@@ -234,8 +241,40 @@ class SystemMonitorWidget extends BaseWidget {
 
         // ── Start updates ───────────────────────────────────────
         this._refresh();
+        this._setupTimer();
+        
+        this._settingsId = this._settings.connect('changed', (settings, key) => {
+            if (key === 'update-interval') {
+                this._setupTimer();
+            } else if (key === 'cpu-color') {
+                this._cpuCell._pal = getColorPal(settings.get_string(key));
+            } else if (key === 'mem-color') {
+                this._memCell._pal = getColorPal(settings.get_string(key));
+            } else if (key === 'disk-color') {
+                this._diskCell._pal = getColorPal(settings.get_string(key));
+            } else if (key === 'intel-color') {
+                this._intelCell._pal = getColorPal(settings.get_string(key));
+            } else if (key === 'nvidia-color') {
+                this._nvidiaCell._pal = getColorPal(settings.get_string(key));
+            }
+            if (key && key.endsWith('-color')) {
+                this._cpuCell._drawingArea.queue_repaint();
+                this._memCell._drawingArea.queue_repaint();
+                this._diskCell._drawingArea.queue_repaint();
+                this._intelCell._drawingArea.queue_repaint();
+                this._nvidiaCell._drawingArea.queue_repaint();
+            }
+        });
+    }
+    
+    _setupTimer() {
+        if (this._timerId) {
+            GLib.Source.remove(this._timerId);
+            this._timerId = null;
+        }
+        const interval = this._settings.get_int('update-interval');
         this._timerId = GLib.timeout_add_seconds(
-            GLib.PRIORITY_DEFAULT, UPDATE_SECS, () => {
+            GLib.PRIORITY_DEFAULT, interval, () => {
                 this._refresh();
                 return GLib.SOURCE_CONTINUE;
             });
@@ -373,6 +412,10 @@ class SystemMonitorWidget extends BaseWidget {
     }
 
     destroy() {
+        if (this._settingsId && this._settings) {
+            this._settings.disconnect(this._settingsId);
+            this._settingsId = null;
+        }
         if (this._timerId) {
             GLib.Source.remove(this._timerId);
             this._timerId = null;
@@ -391,20 +434,36 @@ class SystemMonitorWidget extends BaseWidget {
 /* ── Extension entry point ───────────────────────────────────── */
 export default class ZeoWidgetsExtension extends Extension {
     enable() {
-        this._widget = new SystemMonitorWidget();
+        this._settings = this.getSettings();
+        this._widget = new SystemMonitorWidget(this._settings);
 
         // Place on the desktop layer (below windows, above wallpaper)
         Main.layoutManager._backgroundGroup.add_child(this._widget);
 
-        // Position near top-left of primary monitor
-        let mon = Main.layoutManager.primaryMonitor;
-        const pad = 40;
-        this._widget.set_position(
-            mon.x + pad,
-            mon.y + pad + 30);
+        const updatePos = () => {
+            this._widget.set_position(
+                this._settings.get_int('pos-x'),
+                this._settings.get_int('pos-y')
+            );
+        };
+        
+        // Initial position
+        updatePos();
+        
+        this._settingsId = this._settings.connect('changed', (settings, key) => {
+            if (key === 'pos-x' || key === 'pos-y') {
+                updatePos();
+            }
+        });
     }
 
     disable() {
+        if (this._settingsId && this._settings) {
+            this._settings.disconnect(this._settingsId);
+            this._settingsId = null;
+        }
+        this._settings = null;
+        
         if (this._widget) {
             Main.layoutManager._backgroundGroup.remove_child(this._widget);
             this._widget.destroy();

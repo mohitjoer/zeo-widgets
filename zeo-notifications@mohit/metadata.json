@@ -3,6 +3,7 @@
   "name": "Zeo Notifications",
   "description": "Zeo lib notifications",
   "url": "https://github.com/mohitjoer/zeo-widgets",
+  "settings-schema": "org.gnome.shell.extensions.zeo-notifications",
   "shell-version": [
     "45",
     "46",

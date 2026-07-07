@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.zeo-notifications" path="/org/gnome/shell/extensions/zeo-notifications/">
+    <key name="banner-width" type="i">
+      <default>340</default>
+      <summary>Banner Width</summary>
+    </key>
+    <key name="anim-duration" type="i">
+      <default>350</default>
+      <summary>Animation Duration (ms)</summary>
+    </key>
+  </schema>
+</schemalist>

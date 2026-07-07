@@ -6,6 +6,9 @@ import Clutter from 'gi://Clutter';
 export default class ZeoNotificationsExtension extends Extension {
     enable() {
         if (!Main.messageTray) return;
+        
+        this._settings = this.getSettings();
+        const ext = this;
 
         // 1. Move banner to the Top-Right
         this._origBannerAlignment = Main.messageTray.bannerAlignment;
@@ -38,7 +41,7 @@ export default class ZeoNotificationsExtension extends Extension {
             this._bannerBin.ease({
                 translation_y: 0,
                 opacity: 255,
-                duration: 350,
+                duration: ext._settings.get_int('anim-duration'),
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                 onComplete: () => {
                     this._notificationState = State.SHOWN;
@@ -58,7 +61,7 @@ export default class ZeoNotificationsExtension extends Extension {
             this._resetNotificationLeftTimeout();
             this._bannerBin.remove_all_transitions();
 
-            const duration = animate ? 300 : 0;
+            const duration = animate ? ext._settings.get_int('anim-duration') : 0;
             this._notificationState = State.HIDING;
 
             this._bannerBin.ease({
@@ -94,5 +97,7 @@ export default class ZeoNotificationsExtension extends Extension {
             Main.messageTray._hideNotification = this._origHideNotification;
             this._origHideNotification = undefined;
         }
+        
+        this._settings = null;
     }
 }

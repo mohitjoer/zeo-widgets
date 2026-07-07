@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.zeo-widgets" path="/org/gnome/shell/extensions/zeo-widgets/">
+    <key name="update-interval" type="i">
+      <default>3</default>
+      <summary>Update interval in seconds</summary>
+    </key>
+    <key name="pos-x" type="i">
+      <default>40</default>
+      <summary>X Position</summary>
+    </key>
+    <key name="pos-y" type="i">
+      <default>70</default>
+      <summary>Y Position</summary>
+    </key>
+    <key name="cpu-color" type="s">
+      <default>'#ff3340'</default>
+      <summary>CPU Color</summary>
+    </key>
+    <key name="mem-color" type="s">
+      <default>'#00d3ff'</default>
+      <summary>Memory Color</summary>
+    </key>
+    <key name="disk-color" type="s">
+      <default>'#ff9400'</default>
+      <summary>Disk Color</summary>
+    </key>
+    <key name="intel-color" type="s">
+      <default>'#33c759'</default>
+      <summary>Intel GPU Color</summary>
+    </key>
+    <key name="nvidia-color" type="s">
+      <default>'#b051de'</default>
+      <summary>NVIDIA GPU Color</summary>
+    </key>
+  </schema>
+</schemalist>

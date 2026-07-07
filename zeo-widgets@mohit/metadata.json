@@ -1,8 +1,9 @@
 {
   "uuid": "zeo-widgets@mohit",
-  "name": "Zeo-Style Widgets",
+  "name": "Zeo Monitor Widget",
   "description": "Zeo-style desktop widgets for GNOME. Currently provides a floating monitering card.",
   "url": "https://github.com/mohitjoer/zeo-widgets",
+  "settings-schema": "org.gnome.shell.extensions.zeo-widgets",
   "shell-version": [
     "45",
     "46",
