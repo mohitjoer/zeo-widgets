@@ -12,11 +12,22 @@ const RING_SIZE   = 80;    // canvas px
 const RING_RADIUS = 28;    // centre-of-stroke radius
 const RING_STROKE = 6;     // stroke width
 
-function hexToRGB(hex) {
-    let r = parseInt(hex.slice(1, 3), 16) / 255.0;
-    let g = parseInt(hex.slice(3, 5), 16) / 255.0;
-    let b = parseInt(hex.slice(5, 7), 16) / 255.0;
-    return [r, g, b];
+function hexToRGB(str) {
+    let rgbMatch = str.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+    if (rgbMatch) {
+        return [
+            parseInt(rgbMatch[1], 10) / 255.0,
+            parseInt(rgbMatch[2], 10) / 255.0,
+            parseInt(rgbMatch[3], 10) / 255.0,
+        ];
+    }
+    if (str.startsWith('#')) {
+        let r = parseInt(str.slice(1, 3), 16) / 255.0;
+        let g = parseInt(str.slice(3, 5), 16) / 255.0;
+        let b = parseInt(str.slice(5, 7), 16) / 255.0;
+        return [r || 0, g || 0, b || 0];
+    }
+    return [1, 1, 1];
 }
 function getColorPal(hex) {
     let c = hexToRGB(hex);

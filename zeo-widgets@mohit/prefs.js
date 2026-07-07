@@ -4,6 +4,13 @@ import Gtk from 'gi://Gtk';
 import Gdk from 'gi://Gdk';
 import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
+function rgbaToHex(rgba) {
+    let r = Math.round(rgba.red * 255).toString(16).padStart(2, '0');
+    let g = Math.round(rgba.green * 255).toString(16).padStart(2, '0');
+    let b = Math.round(rgba.blue * 255).toString(16).padStart(2, '0');
+    return `#${r}${g}${b}`;
+}
+
 export default class ZeoWidgetsPreferences extends ExtensionPreferences {
     fillPreferencesWindow(window) {
         const page = new Adw.PreferencesPage();
@@ -57,7 +64,7 @@ export default class ZeoWidgetsPreferences extends ExtensionPreferences {
                 rgba.parse(settings.get_string(key));
                 colorBtn.rgba = rgba;
                 colorBtn.connect('notify::rgba', () => {
-                    settings.set_string(key, colorBtn.rgba.to_string());
+                    settings.set_string(key, rgbaToHex(colorBtn.rgba));
                 });
             } else {
                 colorBtn = new Gtk.ColorButton();
@@ -66,7 +73,7 @@ export default class ZeoWidgetsPreferences extends ExtensionPreferences {
                 rgba.parse(settings.get_string(key));
                 colorBtn.set_rgba(rgba);
                 colorBtn.connect('color-set', () => {
-                    settings.set_string(key, colorBtn.get_rgba().to_string());
+                    settings.set_string(key, rgbaToHex(colorBtn.get_rgba()));
                 });
             }
             
