@@ -1,0 +1,13 @@
+{
+  "uuid": "zeo-notifications@mohit",
+  "name": "Zeo Notifications",
+  "description": "Zeo lib notifications",
+  "shell-version": [
+    "45",
+    "46",
+    "47",
+    "48",
+    "49",
+    "50"
+  ]
+}

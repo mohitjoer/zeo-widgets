@@ -1,0 +1,37 @@
+/* ── GNOME Notification Banner ─────────────────────────────────── */
+.notification-banner {
+    background-color: rgba(40, 40, 42, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+    margin-right: 14px !important;
+    margin-top: 20px !important;
+    width: 300px !important;
+    min-width: 300px !important;
+    max-width: 300px !important;
+    padding: 6px 10px !important;
+}
+
+.notification-banner .message-box {
+    max-width: 270px !important;
+}
+
+.notification-banner .message-content {
+    max-width: 250px !important;
+}
+
+/* Ensure text inside notification looks good */
+.notification-banner .message-title {
+    font-family: sans-serif !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+    margin-bottom: 4px !important;
+    max-width: 250px !important;
+}
+
+.notification-banner .message-body {
+    font-family: sans-serif !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    line-height: 1.4 !important;
+    max-width: 250px !important;
+}

@@ -1,0 +1,13 @@
+{
+  "uuid": "zeo-widgets@mohit",
+  "name": "Zeo-Style Widgets",
+  "description": "Zeo-style desktop widgets for GNOME. Currently provides a floating monitering card.",
+  "shell-version": [
+    "45",
+    "46",
+    "47",
+    "48",
+    "49",
+    "50"
+  ]
+}
