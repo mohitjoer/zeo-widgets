@@ -40,7 +40,10 @@ export default class ZeoNotificationsExtension extends Extension {
             
             // Apply background opacity setting
             const bgOpacity = ext._settings.get_double('bg-opacity');
-            this._bannerBin.style = `background-color: rgba(40, 40, 42, ${bgOpacity}) !important;`;
+            this._bannerBin.style = ''; // Clear bin style to prevent black corners
+            if (this._banner) {
+                this._banner.style = `background-color: rgba(40, 40, 42, ${bgOpacity}) !important;`;
+            }
 
             this._bannerBin.ease({
                 translation_y: 0,
