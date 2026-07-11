@@ -25,13 +25,13 @@
       <default>'#ff9400'</default>
       <summary>Disk Color</summary>
     </key>
-    <key name="intel-color" type="s">
+    <key name="igpu-color" type="s">
       <default>'#33c759'</default>
-      <summary>Intel GPU Color</summary>
+      <summary>Integrated GPU Color</summary>
     </key>
-    <key name="nvidia-color" type="s">
+    <key name="dgpu-color" type="s">
       <default>'#b051de'</default>
-      <summary>NVIDIA GPU Color</summary>
+      <summary>Discrete GPU Color</summary>
     </key>
   </schema>
 </schemalist>

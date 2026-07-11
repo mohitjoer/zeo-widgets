@@ -46,8 +46,8 @@ export default class ZeoWidgetsPreferences extends ExtensionPreferences {
         const colorGroup = new Adw.PreferencesGroup({ title: 'Ring Colors' });
         page.add(colorGroup);
 
-        const rings = ['cpu', 'mem', 'disk', 'intel', 'nvidia'];
-        const labels = ['CPU', 'Memory', 'Disk', 'Intel GPU', 'NVIDIA GPU'];
+        const rings = ['cpu', 'mem', 'disk', 'igpu', 'dgpu'];
+        const labels = ['CPU', 'Memory', 'Disk', 'Integrated GPU', 'Discrete GPU'];
 
         for (let i = 0; i < rings.length; i++) {
             const key = `${rings[i]}-color`;

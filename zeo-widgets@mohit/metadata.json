@@ -3,6 +3,9 @@
   "name": "Zeo Monitor Widget",
   "description": "Zeo-style desktop widgets for GNOME. Currently provides a floating monitering card.",
   "url": "https://github.com/mohitjoer/zeo-widgets",
+  "github": "https://github.com/mohitjoer",
+  "linkedin": "https://www.linkedin.com/in/mohitjoe/",
+  "portfolio": "https://mohitjoe.xyz",
   "settings-schema": "org.gnome.shell.extensions.zeo-widgets",
   "shell-version": [
     "45",
