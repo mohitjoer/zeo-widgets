@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.zeo-blutooth-device" path="/org/gnome/shell/extensions/zeo-blutooth-device/">
+    <key name="pos-x" type="i">
+      <default>100</default>
+      <summary>X Position</summary>
+    </key>
+    <key name="pos-y" type="i">
+      <default>100</default>
+      <summary>Y Position</summary>
+    </key>
+  </schema>
+</schemalist>

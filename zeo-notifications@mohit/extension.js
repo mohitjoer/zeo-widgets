@@ -10,14 +10,29 @@ export default class ZeoNotificationsExtension extends Extension {
         this._settings = this.getSettings();
         const ext = this;
 
-        // 1. Move banner to the Top-Right
+        const updateAlignment = () => {
+            const pos = ext._settings.get_int('position');
+            let hAlign = Clutter.ActorAlign.END;
+            let vAlign = Clutter.ActorAlign.START;
+            if (pos === 0) { hAlign = Clutter.ActorAlign.END; vAlign = Clutter.ActorAlign.START; }
+            else if (pos === 1) { hAlign = Clutter.ActorAlign.START; vAlign = Clutter.ActorAlign.START; }
+            else if (pos === 2) { hAlign = Clutter.ActorAlign.END; vAlign = Clutter.ActorAlign.END; }
+            else if (pos === 3) { hAlign = Clutter.ActorAlign.START; vAlign = Clutter.ActorAlign.END; }
+            else if (pos === 4) { hAlign = Clutter.ActorAlign.CENTER; vAlign = Clutter.ActorAlign.START; }
+            
+            Main.messageTray.bannerAlignment = hAlign;
+            if (Main.messageTray._bannerBin) {
+                Main.messageTray._bannerBin.set_y_align(vAlign);
+            }
+        };
+
         this._origBannerAlignment = Main.messageTray.bannerAlignment;
-        Main.messageTray.bannerAlignment = Clutter.ActorAlign.END; // Right align
-        
         if (Main.messageTray._bannerBin) {
             this._origYAlign = Main.messageTray._bannerBin.y_align;
-            Main.messageTray._bannerBin.set_y_align(Clutter.ActorAlign.START); // Top
         }
+
+        updateAlignment();
+        this._settingsChangedId = this._settings.connect('changed::position', updateAlignment);
 
         // 2. Custom Slide-in / Fade-in Animation via _updateShowingNotification
         this._origUpdateShowingNotification = Main.messageTray._updateShowingNotification;
@@ -38,11 +53,17 @@ export default class ZeoNotificationsExtension extends Extension {
             this._bannerBin.translation_y = 50;
             this._bannerBin.opacity = 0;
             
-            // Apply background opacity setting
+            // Apply styling
             const bgOpacity = ext._settings.get_double('bg-opacity');
+            const bWidth = ext._settings.get_int('banner-width');
+            const bHeight = ext._settings.get_int('banner-height');
+            
             this._bannerBin.style = ''; // Clear bin style to prevent black corners
             if (this._banner) {
-                this._banner.style = `background-color: rgba(40, 40, 42, ${bgOpacity}) !important;`;
+                let s = `background-color: rgba(40, 40, 42, ${bgOpacity}) !important; `;
+                s += `width: ${bWidth}px !important; min-width: ${bWidth}px !important; max-width: ${bWidth}px !important; `;
+                if (bHeight > 0) s += `min-height: ${bHeight}px !important; `;
+                this._banner.style = s;
             }
 
             this._bannerBin.ease({
@@ -70,9 +91,12 @@ export default class ZeoNotificationsExtension extends Extension {
 
             const duration = animate ? ext._settings.get_int('anim-duration') : 0;
             this._notificationState = State.HIDING;
+            
+            const pos = ext._settings.get_int('position');
+            const hideY = (pos === 2 || pos === 3) ? 50 : -50;
 
             this._bannerBin.ease({
-                translation_y: -50,
+                translation_y: hideY,
                 opacity: 0,
                 duration,
                 mode: Clutter.AnimationMode.EASE_IN_QUAD,
@@ -105,6 +129,10 @@ export default class ZeoNotificationsExtension extends Extension {
             this._origHideNotification = undefined;
         }
         
+        if (this._settingsChangedId) {
+            this._settings.disconnect(this._settingsChangedId);
+            this._settingsChangedId = null;
+        }
         this._settings = null;
     }
 }

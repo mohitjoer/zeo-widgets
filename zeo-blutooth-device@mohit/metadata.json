@@ -1,0 +1,16 @@
+{
+  "uuid": "zeo-blutooth-device@mohit",
+  "name": "Zeo Bluetooth Device",
+  "description": "Zeo-style desktop widget showing connected bluetooth devices and their battery.",
+  "url": "https://github.com/mohitjoer/zeo-widgets",
+  "github": "https://github.com/mohitjoer",
+  "settings-schema": "org.gnome.shell.extensions.zeo-blutooth-device",
+  "shell-version": [
+    "45",
+    "46",
+    "47",
+    "48",
+    "49",
+    "50"
+  ]
+}
