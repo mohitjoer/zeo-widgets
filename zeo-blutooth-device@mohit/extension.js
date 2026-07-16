@@ -154,12 +154,34 @@ class RingCell {
     }
 
     destroy() {
-        if (this._drawingArea && this._signalTracker) {
-            this._drawingArea.disconnectObject(this._signalTracker);
-            this._signalTracker = null;
+        if (this._drawingArea) {
+            if (this._signalTracker) {
+                this._drawingArea.disconnectObject(this._signalTracker);
+                this._signalTracker = null;
+            }
+            this._drawingArea.destroy();
+            this._drawingArea = null;
         }
-        this._drawingArea = null;
-        this.actor.destroy();
+        
+        if (this._icon) {
+            this._icon.destroy();
+            this._icon = null;
+        }
+        
+        if (this._nameLabel) {
+            this._nameLabel.destroy();
+            this._nameLabel = null;
+        }
+        
+        if (this._detailLabel) {
+            this._detailLabel.destroy();
+            this._detailLabel = null;
+        }
+        
+        if (this.actor) {
+            this.actor.destroy();
+            this.actor = null;
+        }
     }
 }
 
@@ -241,7 +263,8 @@ class BluetoothWidget extends BaseWidget {
             const devices = result[0];
             const currentDevices = {};
 
-            for (const path of devices) {
+            for (let i = 0; i < devices.length; i++) {
+                const path = devices[i];
                 const dev = new DeviceProxy(Gio.DBus.system, 'org.freedesktop.UPower', path);
                 // Check if bluetooth
                 if (dev.NativePath && dev.NativePath.includes('/org/bluez/')) {
@@ -274,7 +297,9 @@ class BluetoothWidget extends BaseWidget {
             let hasDevices = false;
 
             // Add or update cells
-            for (const [path, info] of Object.entries(currentDevices)) {
+            const entries = Object.entries(currentDevices);
+            for (let i = 0; i < entries.length; i++) {
+                const [path, info] = entries[i];
                 hasDevices = true;
                 
                 let hexColor = '#e74c3c'; // red
@@ -300,7 +325,9 @@ class BluetoothWidget extends BaseWidget {
             }
 
             // Remove old cells
-            for (const path of Object.keys(this._ringCells)) {
+            const keys = Object.keys(this._ringCells);
+            for (let i = 0; i < keys.length; i++) {
+                const path = keys[i];
                 if (!currentDevices[path]) {
                     this._ringCells[path].destroy();
                     delete this._ringCells[path];
@@ -322,11 +349,24 @@ class BluetoothWidget extends BaseWidget {
             this._settings.disconnect(this._settingsChangedId);
             this._settingsChangedId = null;
         }
-        for (const cell of Object.values(this._ringCells)) {
-            cell.destroy();
+        const cells = Object.values(this._ringCells);
+        for (let i = 0; i < cells.length; i++) {
+            const cell = cells[i];
+            if (cell) cell.destroy();
         }
         this._ringCells = {};
         this._upower = null;
+        
+        if (this._noDeviceLabel) {
+            this._noDeviceLabel.destroy();
+            this._noDeviceLabel = null;
+        }
+        
+        if (this._row) {
+            this._row.destroy();
+            this._row = null;
+        }
+        
         this.disconnectObject(this);
         super.destroy();
     }

@@ -41,37 +41,68 @@ function getColorPal(hex) {
 
 /* ── GPU auto-detection ──────────────────────────────────────── */
 
+function _execCommandAsync(argv) {
+    return new Promise((resolve) => {
+        try {
+            let proc = Gio.Subprocess.new(argv, Gio.SubprocessFlags.STDOUT_PIPE);
+            proc.communicate_utf8_async(null, null, (p, res) => {
+                try {
+                    let [success, stdout] = p.communicate_utf8_finish(res);
+                    resolve(stdout || null);
+                } catch (e) {
+                    resolve(null);
+                }
+            });
+        } catch (e) {
+            resolve(null);
+        }
+    });
+}
+
+function _readFileAsync(path) {
+    return new Promise((resolve) => {
+        let file = Gio.File.new_for_path(path);
+        file.load_contents_async(null, (obj, res) => {
+            try {
+                let [success, contents] = obj.load_contents_finish(res);
+                if (success) {
+                    resolve(new TextDecoder().decode(contents));
+                } else {
+                    resolve(null);
+                }
+            } catch (e) {
+                resolve(null);
+            }
+        });
+    });
+}
+
 /**
  * Build a map of GPU PCI slots → friendly names from `lspci -vmm`.
  * Returns e.g. { '0000:00:02.0': 'Iris Xe Graphics', '0000:01:00.0': 'GeForce RTX 5070 Ti' }
  */
-function _getLspciGpuNames() {
+async function _getLspciGpuNames() {
     const names = {};
-    try {
-        let [ok, out] = GLib.spawn_command_line_sync('lspci -vmm');
-        if (!ok) return names;
-        let txt = new TextDecoder().decode(out);
-        // Split into blocks separated by blank lines
-        let blocks = txt.split(/\n\n+/);
-        for (let block of blocks) {
-            if (!block.includes('VGA compatible controller') &&
-                !block.includes('3D controller') &&
-                !block.includes('Display controller'))
-                continue;
-            let slotMatch = block.match(/^Slot:\s*(.+)$/m);
-            let deviceMatch = block.match(/^Device:\s*(.+)$/m);
-            if (slotMatch && deviceMatch) {
-                let name = deviceMatch[1].trim();
-                // Strip the chip-code prefix like "GA107M [GeForce RTX 3050 Mobile]"
-                // → keep just the bracketed name if present
-                let bracketMatch = name.match(/\[(.+)\]/);
-                if (bracketMatch)
-                    name = bracketMatch[1];
-                names[slotMatch[1].trim()] = name;
-            }
+    let txt = await _execCommandAsync(['lspci', '-vmm']);
+    if (!txt) return names;
+    // Split into blocks separated by blank lines
+    let blocks = txt.split(/\n\n+/);
+    for (let block of blocks) {
+        if (!block.includes('VGA compatible controller') &&
+            !block.includes('3D controller') &&
+            !block.includes('Display controller'))
+            continue;
+        let slotMatch = block.match(/^Slot:\s*(.+)$/m);
+        let deviceMatch = block.match(/^Device:\s*(.+)$/m);
+        if (slotMatch && deviceMatch) {
+            let name = deviceMatch[1].trim();
+            // Strip the chip-code prefix like "GA107M [GeForce RTX 3050 Mobile]"
+            // → keep just the bracketed name if present
+            let bracketMatch = name.match(/\[(.+)\]/);
+            if (bracketMatch)
+                name = bracketMatch[1];
+            names[slotMatch[1].trim()] = name;
         }
-    } catch (e) {
-        // lspci not available — will fall back to vendor names
     }
     return names;
 }
@@ -81,8 +112,8 @@ function _getLspciGpuNames() {
  * Returns an array of { vendor, cardIndex, name, pciSlot, type } objects
  * where type is 'intel', 'amd', or 'nvidia'.
  */
-function _detectGpus() {
-    const lspciNames = _getLspciGpuNames();
+async function _detectGpus() {
+    const lspciNames = await _getLspciGpuNames();
     const gpus = [];
 
     for (let i = 0; i < 10; i++) {
@@ -90,9 +121,9 @@ function _detectGpus() {
         if (!GLib.file_test(vendorPath, GLib.FileTest.EXISTS))
             continue;
 
-        let [ok, raw] = GLib.file_get_contents(vendorPath);
-        if (!ok) continue;
-        let vendor = new TextDecoder().decode(raw).trim();
+        let rawVendor = await _readFileAsync(vendorPath);
+        if (!rawVendor) continue;
+        let vendor = rawVendor.trim();
 
         let type;
         if (vendor === VENDOR_INTEL)
@@ -106,18 +137,15 @@ function _detectGpus() {
 
         // Try to get the PCI slot to match with lspci names
         let pciSlot = '';
-        try {
-            let ueventPath = `/sys/class/drm/card${i}/device/uevent`;
-            if (GLib.file_test(ueventPath, GLib.FileTest.EXISTS)) {
-                let [uOk, uRaw] = GLib.file_get_contents(ueventPath);
-                if (uOk) {
-                    let uevent = new TextDecoder().decode(uRaw);
-                    let slotMatch = uevent.match(/PCI_SLOT_NAME=(.+)/);
-                    if (slotMatch)
-                        pciSlot = slotMatch[1].trim();
-                }
+        let ueventPath = `/sys/class/drm/card${i}/device/uevent`;
+        if (GLib.file_test(ueventPath, GLib.FileTest.EXISTS)) {
+            let uevent = await _readFileAsync(ueventPath);
+            if (uevent) {
+                let slotMatch = uevent.match(/PCI_SLOT_NAME=(.+)/);
+                if (slotMatch)
+                    pciSlot = slotMatch[1].trim();
             }
-        } catch (e) { /* ignore */ }
+        }
 
         // Get a friendly name, in priority order:
         // 1. lspci name (most descriptive)
@@ -127,19 +155,16 @@ function _detectGpus() {
         if (pciSlot && lspciNames[pciSlot]) {
             name = lspciNames[pciSlot];
         } else if (type === 'nvidia') {
-            try {
-                let [nOk, nOut] = GLib.spawn_command_line_sync(
-                    'nvidia-smi --query-gpu=name --format=csv,noheader,nounits');
-                if (nOk) {
-                    let nName = new TextDecoder().decode(nOut).trim();
-                    if (nName) {
-                        // Clean up "NVIDIA GeForce RTX 3050 Laptop GPU" → "RTX 3050"
-                        name = nName.replace(/^NVIDIA\s+/i, '')
-                                    .replace(/^GeForce\s+/i, '')
-                                    .replace(/\s+(Laptop|Mobile)\s+GPU$/i, '');
-                    }
+            let nName = await _execCommandAsync(['nvidia-smi', '--query-gpu=name', '--format=csv,noheader,nounits']);
+            if (nName) {
+                nName = nName.trim();
+                if (nName) {
+                    // Clean up "NVIDIA GeForce RTX 3050 Laptop GPU" → "RTX 3050"
+                    name = nName.replace(/^NVIDIA\s+/i, '')
+                                .replace(/^GeForce\s+/i, '')
+                                .replace(/\s+(Laptop|Mobile)\s+GPU$/i, '');
                 }
-            } catch (e) { /* ignore */ }
+            }
         }
 
         // Vendor fallback names
@@ -350,11 +375,34 @@ class RingCell {
     }
 
     destroy() {
-        if (this._drawingArea && this._signalTracker) {
-            this._drawingArea.disconnectObject(this._signalTracker);
-            this._signalTracker = null;
+        if (this._drawingArea) {
+            if (this._signalTracker) {
+                this._drawingArea.disconnectObject(this._signalTracker);
+                this._signalTracker = null;
+            }
+            this._drawingArea.destroy();
+            this._drawingArea = null;
         }
-        this._drawingArea = null;
+
+        if (this._pctLabel) {
+            this._pctLabel.destroy();
+            this._pctLabel = null;
+        }
+
+        if (this._nameLabel) {
+            this._nameLabel.destroy();
+            this._nameLabel = null;
+        }
+
+        if (this._detailLabel) {
+            this._detailLabel.destroy();
+            this._detailLabel = null;
+        }
+
+        if (this.actor) {
+            this.actor.destroy();
+            this.actor = null;
+        }
     }
 }
 
@@ -364,18 +412,18 @@ class RingCell {
  * Read Intel iGPU usage via i915/xe sysfs frequency files.
  * @param {number} cardIndex - card index in /sys/class/drm/
  */
-function _readIntelGpu(cardIndex) {
+async function _readIntelGpu(cardIndex) {
     try {
         let actPath = `/sys/class/drm/card${cardIndex}/gt/gt0/rps_act_freq_mhz`;
         let maxPath = `/sys/class/drm/card${cardIndex}/gt/gt0/rps_max_freq_mhz`;
         if (!GLib.file_test(actPath, GLib.FileTest.EXISTS) ||
             !GLib.file_test(maxPath, GLib.FileTest.EXISTS))
             return [0, '—'];
-        let [ok1, r1] = GLib.file_get_contents(actPath);
-        let [ok2, r2] = GLib.file_get_contents(maxPath);
-        if (!ok1 || !ok2) return [0, '—'];
-        let act = parseInt(new TextDecoder().decode(r1));
-        let max = parseInt(new TextDecoder().decode(r2));
+        let r1 = await _readFileAsync(actPath);
+        let r2 = await _readFileAsync(maxPath);
+        if (!r1 || !r2) return [0, '—'];
+        let act = parseInt(r1);
+        let max = parseInt(r2);
         let pct = max > 0 ? (act / max) * 100 : 0;
         return [pct, `${act} / ${max} MHz`];
     } catch (e) {
@@ -388,22 +436,21 @@ function _readIntelGpu(cardIndex) {
  * Tries gpu_busy_percent first, falls back to frequency ratio.
  * @param {number} cardIndex - card index in /sys/class/drm/
  */
-function _readAmdGpu(cardIndex) {
+async function _readAmdGpu(cardIndex) {
     try {
         // Method 1: direct utilisation percentage (amdgpu exposes this)
         let busyPath = `/sys/class/drm/card${cardIndex}/device/gpu_busy_percent`;
         if (GLib.file_test(busyPath, GLib.FileTest.EXISTS)) {
-            let [ok, raw] = GLib.file_get_contents(busyPath);
-            if (ok) {
-                let pct = parseInt(new TextDecoder().decode(raw)) || 0;
+            let raw = await _readFileAsync(busyPath);
+            if (raw) {
+                let pct = parseInt(raw) || 0;
 
                 // Also try to get current frequency for the detail string
                 let detail = 'Usage';
                 let freqPath = `/sys/class/drm/card${cardIndex}/device/pp_dpm_sclk`;
                 if (GLib.file_test(freqPath, GLib.FileTest.EXISTS)) {
-                    let [fOk, fRaw] = GLib.file_get_contents(freqPath);
-                    if (fOk) {
-                        let txt = new TextDecoder().decode(fRaw);
+                    let txt = await _readFileAsync(freqPath);
+                    if (txt) {
                         // Find the active frequency line (marked with *)
                         let activeMatch = txt.match(/(\d+)\s*Mhz\s*\*/i);
                         if (activeMatch)
@@ -417,9 +464,8 @@ function _readAmdGpu(cardIndex) {
         // Method 2: frequency ratio from pp_dpm_sclk
         let freqPath = `/sys/class/drm/card${cardIndex}/device/pp_dpm_sclk`;
         if (GLib.file_test(freqPath, GLib.FileTest.EXISTS)) {
-            let [ok, raw] = GLib.file_get_contents(freqPath);
-            if (ok) {
-                let txt = new TextDecoder().decode(raw);
+            let txt = await _readFileAsync(freqPath);
+            if (txt) {
                 let lines = txt.trim().split('\n');
                 // Find active line (ends with *)
                 let activeMatch = txt.match(/(\d+)\s*Mhz\s*\*/i);
@@ -444,12 +490,11 @@ function _readAmdGpu(cardIndex) {
 /**
  * Read NVIDIA GPU usage via nvidia-smi.
  */
-function _readNvidiaGpu() {
+async function _readNvidiaGpu() {
     try {
-        let [ok, out, , status] = GLib.spawn_command_line_sync(
-            'nvidia-smi --query-gpu=utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits');
-        if (!ok) return [0, '—'];
-        let txt   = new TextDecoder().decode(out).trim();
+        let txt = await _execCommandAsync(['nvidia-smi', '--query-gpu=utilization.gpu,memory.used,memory.total', '--format=csv,noheader,nounits']);
+        if (!txt) return [0, '—'];
+        txt = txt.trim();
         let parts = txt.split(',').map(s => s.trim());
         let util  = parseInt(parts[0]) || 0;
         let mUsed = parseInt(parts[1]) || 0;
@@ -476,11 +521,9 @@ class SystemMonitorWidget extends BaseWidget {
         this._settings = settings;
 
         // ── Auto-detect GPUs ────────────────────────────────────────
-        this._gpus = _detectGpus();
+        this._gpus = [];
         this._gpuCells = [];
-
-        // ── Ring row ────────────────────────────────────────────
-        let row = new St.BoxLayout({
+        this._row = new St.BoxLayout({
             style_class: 'zeo-ring-row',
             x_align: Clutter.ActorAlign.CENTER,
         });
@@ -489,41 +532,15 @@ class SystemMonitorWidget extends BaseWidget {
         this._memCell    = new RingCell('Memory',   getColorPal(this._settings.get_string('mem-color')));
         this._diskCell   = new RingCell('Disk',     getColorPal(this._settings.get_string('disk-color')));
 
-        row.add_child(this._cpuCell.actor);
-        row.add_child(this._memCell.actor);
-        row.add_child(this._diskCell.actor);
+        this._row.add_child(this._cpuCell.actor);
+        this._row.add_child(this._memCell.actor);
+        this._row.add_child(this._diskCell.actor);
 
-        // Add GPU rings dynamically based on detected hardware
-        // Use igpu-color for the first iGPU (Intel/AMD), dgpu-color for the first dGPU (NVIDIA/AMD discrete)
-        let iGpuCount = 0;
-        let dGpuCount = 0;
-        for (let gpu of this._gpus) {
-            let colorKey;
-            // Intel and AMD integrated GPUs get igpu-color, NVIDIA gets dgpu-color
-            // If there are multiple GPUs of same category, extra ones use the same color
-            if (gpu.type === 'nvidia') {
-                colorKey = 'dgpu-color';
-                dGpuCount++;
-            } else {
-                // Intel or AMD — typically integrated
-                colorKey = 'igpu-color';
-                iGpuCount++;
-            }
+        this.add_child(this._row);
 
-            let label = _shortGpuName(gpu.name);
-            let cell = new RingCell(label, getColorPal(this._settings.get_string(colorKey)));
-            cell._gpuInfo = gpu;
-            cell._colorKey = colorKey;
-            this._gpuCells.push(cell);
-            row.add_child(cell.actor);
-        }
+        // ── Start async init ───────────────────────────────────────
+        this._initGpus().catch(console.error);
 
-        this.add_child(row);
-
-        // ── Start updates ───────────────────────────────────────
-        this._refresh();
-        this._setupTimer();
-        
         this._settings.connectObject('changed', (settings, key) => {
             if (key === 'update-interval') {
                 this._setupTimer();
@@ -541,14 +558,42 @@ class SystemMonitorWidget extends BaseWidget {
                 }
             }
             if (key && key.endsWith('-color')) {
-                this._cpuCell._drawingArea.queue_repaint();
-                this._memCell._drawingArea.queue_repaint();
-                this._diskCell._drawingArea.queue_repaint();
+                if (this._cpuCell && this._cpuCell._drawingArea) this._cpuCell._drawingArea.queue_repaint();
+                if (this._memCell && this._memCell._drawingArea) this._memCell._drawingArea.queue_repaint();
+                if (this._diskCell && this._diskCell._drawingArea) this._diskCell._drawingArea.queue_repaint();
                 for (let cell of this._gpuCells) {
-                    cell._drawingArea.queue_repaint();
+                    if (cell && cell._drawingArea) cell._drawingArea.queue_repaint();
                 }
             }
         }, this);
+    }
+
+    async _initGpus() {
+        this._gpus = await _detectGpus();
+        let iGpuCount = 0;
+        let dGpuCount = 0;
+        for (let gpu of this._gpus) {
+            let colorKey;
+            if (gpu.type === 'nvidia') {
+                colorKey = 'dgpu-color';
+                dGpuCount++;
+            } else {
+                colorKey = 'igpu-color';
+                iGpuCount++;
+            }
+
+            let label = _shortGpuName(gpu.name);
+            let cell = new RingCell(label, getColorPal(this._settings.get_string(colorKey)));
+            cell._gpuInfo = gpu;
+            cell._colorKey = colorKey;
+            this._gpuCells.push(cell);
+            if (this._row) {
+                this._row.add_child(cell.actor);
+            }
+        }
+
+        await this._refresh();
+        this._setupTimer();
     }
     
     _setupTimer() {
@@ -559,18 +604,17 @@ class SystemMonitorWidget extends BaseWidget {
         const interval = this._settings.get_int('update-interval');
         this._timerId = GLib.timeout_add_seconds(
             GLib.PRIORITY_DEFAULT, interval, () => {
-                this._refresh();
+                this._refresh().catch(console.error);
                 return GLib.SOURCE_CONTINUE;
             });
     }
 
     /* ── Data readers ──────────────────────────────────────────── */
 
-    _readCpu() {
+    async _readCpu() {
         try {
-            let [ok, raw] = GLib.file_get_contents('/proc/stat');
-            if (!ok) return [0, '—'];
-            let txt = new TextDecoder().decode(raw);
+            let txt = await _readFileAsync('/proc/stat');
+            if (!txt) return [0, '—'];
             let lines = txt.split('\n');
             let cpuLine = lines[0].trim().split(/\s+/);
             if (cpuLine[0] !== 'cpu') return [0, '—'];
@@ -605,11 +649,10 @@ class SystemMonitorWidget extends BaseWidget {
         }
     }
 
-    _readMemory() {
+    async _readMemory() {
         try {
-            let [ok, raw] = GLib.file_get_contents('/proc/meminfo');
-            if (!ok) return [0, '—'];
-            let txt  = new TextDecoder().decode(raw);
+            let txt = await _readFileAsync('/proc/meminfo');
+            if (!txt) return [0, '—'];
             let tot  = parseInt(txt.match(/MemTotal:\s+(\d+)/)?.[1] ?? '0');
             let avl  = parseInt(txt.match(/MemAvailable:\s+(\d+)/)?.[1] ?? '0');
             let usedGB = (tot - avl) / 1048576;
@@ -621,11 +664,11 @@ class SystemMonitorWidget extends BaseWidget {
         }
     }
 
-    _readDisk() {
+    async _readDisk() {
         try {
-            let [ok, out] = GLib.spawn_command_line_sync('df --output=used,size,pcent / ');
-            if (!ok) return [0, '—'];
-            let txt   = new TextDecoder().decode(out).trim();
+            let txt = await _execCommandAsync(['df', '--output=used,size,pcent', '/']);
+            if (!txt) return [0, '—'];
+            txt = txt.trim();
             let lines = txt.split('\n');
             if (lines.length < 2) return [0, '—'];
             let parts = lines[1].trim().split(/\s+/);
@@ -640,32 +683,34 @@ class SystemMonitorWidget extends BaseWidget {
         }
     }
 
-    _readGpu(gpu) {
+    async _readGpu(gpu) {
         switch (gpu.type) {
             case 'intel':
-                return _readIntelGpu(gpu.cardIndex);
+                return await _readIntelGpu(gpu.cardIndex);
             case 'amd':
-                return _readAmdGpu(gpu.cardIndex);
+                return await _readAmdGpu(gpu.cardIndex);
             case 'nvidia':
-                return _readNvidiaGpu();
+                return await _readNvidiaGpu();
             default:
                 return [0, '—'];
         }
     }
 
-    _refresh() {
-        let [cpuP,  cpuD]  = this._readCpu();
-        let [memP,  memD]  = this._readMemory();
-        let [dskP,  dskD]  = this._readDisk();
+    async _refresh() {
+        if (!this._cpuCell || !this._memCell || !this._diskCell) return;
 
-        this._cpuCell.update(cpuP,    cpuD);
-        this._memCell.update(memP,    memD);
-        this._diskCell.update(dskP,   dskD);
+        let [cpuP,  cpuD]  = await this._readCpu();
+        let [memP,  memD]  = await this._readMemory();
+        let [dskP,  dskD]  = await this._readDisk();
+
+        if (this._cpuCell) this._cpuCell.update(cpuP,    cpuD);
+        if (this._memCell) this._memCell.update(memP,    memD);
+        if (this._diskCell) this._diskCell.update(dskP,   dskD);
 
         // Update all detected GPU cells
         for (let cell of this._gpuCells) {
-            let [pct, detail] = this._readGpu(cell._gpuInfo);
-            cell.update(pct, detail);
+            let [pct, detail] = await this._readGpu(cell._gpuInfo);
+            if (cell) cell.update(pct, detail);
         }
     }
 
@@ -676,12 +721,27 @@ class SystemMonitorWidget extends BaseWidget {
             this._timerId = null;
         }
 
-        this._cpuCell?.destroy();
-        this._memCell?.destroy();
-        this._diskCell?.destroy();
-        for (let cell of this._gpuCells)
-            cell?.destroy();
+        if (this._cpuCell) {
+            this._cpuCell.destroy();
+            this._cpuCell = null;
+        }
+        if (this._memCell) {
+            this._memCell.destroy();
+            this._memCell = null;
+        }
+        if (this._diskCell) {
+            this._diskCell.destroy();
+            this._diskCell = null;
+        }
+        for (let cell of this._gpuCells) {
+            if (cell) cell.destroy();
+        }
         this._gpuCells = [];
+        
+        if (this._row) {
+            this._row.destroy();
+            this._row = null;
+        }
 
         super.destroy();
     }
