@@ -110,23 +110,23 @@ export default class ZeoNotificationsExtension extends Extension {
     }
 
     disable() {
-        if (!Main.messageTray) return;
-
-        if (this._origBannerAlignment !== undefined) {
-            Main.messageTray.bannerAlignment = this._origBannerAlignment;
-            this._origBannerAlignment = undefined;
-        }
-        if (Main.messageTray._bannerBin && this._origYAlign !== undefined) {
-            Main.messageTray._bannerBin.set_y_align(this._origYAlign);
-            this._origYAlign = undefined;
-        }
-        if (this._origUpdateShowingNotification) {
-            Main.messageTray._updateShowingNotification = this._origUpdateShowingNotification;
-            this._origUpdateShowingNotification = undefined;
-        }
-        if (this._origHideNotification) {
-            Main.messageTray._hideNotification = this._origHideNotification;
-            this._origHideNotification = undefined;
+        if (Main.messageTray) {
+            if (this._origBannerAlignment !== undefined) {
+                Main.messageTray.bannerAlignment = this._origBannerAlignment;
+                this._origBannerAlignment = undefined;
+            }
+            if (Main.messageTray._bannerBin && this._origYAlign !== undefined) {
+                Main.messageTray._bannerBin.set_y_align(this._origYAlign);
+                this._origYAlign = undefined;
+            }
+            if (this._origUpdateShowingNotification) {
+                Main.messageTray._updateShowingNotification = this._origUpdateShowingNotification;
+                this._origUpdateShowingNotification = undefined;
+            }
+            if (this._origHideNotification) {
+                Main.messageTray._hideNotification = this._origHideNotification;
+                this._origHideNotification = undefined;
+            }
         }
         
         if (this._settingsChangedId) {
