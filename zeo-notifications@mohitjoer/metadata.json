@@ -1,11 +1,8 @@
 {
-  "uuid": "zeo-notifications@mohit",
+  "uuid": "zeo-notifications@mohitjoer",
   "name": "Zeo Notifications",
-  "description": "Zeo lib notifications",
+  "description": "Zeo lib notifications \\n\\nGitHub: https://github.com/mohitjoer \\nLinkedIn: https://www.linkedin.com/in/mohitjoe/ \\nPortfolio: https://mohitjoe.xyz",
   "url": "https://github.com/mohitjoer/zeo-widgets",
-  "github": "https://github.com/mohitjoer",
-  "linkedin": "https://www.linkedin.com/in/mohitjoe/",
-  "portfolio": "https://mohitjoe.xyz",
   "settings-schema": "org.gnome.shell.extensions.zeo-notifications",
   "shell-version": [
     "45",
