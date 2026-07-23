@@ -48,7 +48,16 @@ function _execCommandAsync(argv) {
             proc.communicate_utf8_async(null, null, (p, res) => {
                 try {
                     let [success, stdout] = p.communicate_utf8_finish(res);
-                    resolve(stdout || null);
+                    if (success && p.get_successful()) {
+                        let out = stdout ? stdout.trim() : '';
+                        if (out.includes('Failed to initialize NVML') || out.includes('NVML library version')) {
+                            resolve(null);
+                        } else {
+                            resolve(stdout || null);
+                        }
+                    } else {
+                        resolve(null);
+                    }
                 } catch (e) {
                     resolve(null);
                 }
@@ -95,13 +104,17 @@ async function _getLspciGpuNames() {
         let slotMatch = block.match(/^Slot:\s*(.+)$/m);
         let deviceMatch = block.match(/^Device:\s*(.+)$/m);
         if (slotMatch && deviceMatch) {
+            let slot = slotMatch[1].trim();
+            let normSlot = slot.replace(/^0000:/, '');
             let name = deviceMatch[1].trim();
             // Strip the chip-code prefix like "GA107M [GeForce RTX 3050 Mobile]"
             // → keep just the bracketed name if present
             let bracketMatch = name.match(/\[(.+)\]/);
             if (bracketMatch)
                 name = bracketMatch[1];
-            names[slotMatch[1].trim()] = name;
+            names[slot] = name;
+            names[normSlot] = name;
+            names[`0000:${normSlot}`] = name;
         }
     }
     return names;
@@ -493,12 +506,15 @@ async function _readAmdGpu(cardIndex) {
 async function _readNvidiaGpu() {
     try {
         let txt = await _execCommandAsync(['nvidia-smi', '--query-gpu=utilization.gpu,memory.used,memory.total', '--format=csv,noheader,nounits']);
-        if (!txt) return [0, '—'];
+        if (!txt) return [0, 'N/A'];
         txt = txt.trim();
+        if (txt.includes('Failed to initialize NVML') || txt.includes('NVML')) return [0, 'N/A'];
         let parts = txt.split(',').map(s => s.trim());
-        let util  = parseInt(parts[0]) || 0;
-        let mUsed = parseInt(parts[1]) || 0;
-        let mTot  = parseInt(parts[2]) || 0;
+        if (parts.length < 3) return [0, 'N/A'];
+        let util  = parseInt(parts[0]);
+        let mUsed = parseInt(parts[1]);
+        let mTot  = parseInt(parts[2]);
+        if (isNaN(util) || isNaN(mUsed) || isNaN(mTot)) return [0, 'N/A'];
         return [util, `${mUsed} / ${mTot} MB`];
     } catch (e) {
         return [0, 'N/A'];
