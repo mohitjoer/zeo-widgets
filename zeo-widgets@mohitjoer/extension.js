@@ -505,17 +505,28 @@ async function _readAmdGpu(cardIndex) {
  */
 async function _readNvidiaGpu() {
     try {
-        let txt = await _execCommandAsync(['nvidia-smi', '--query-gpu=utilization.gpu,memory.used,memory.total', '--format=csv,noheader,nounits']);
+        let txt = await _execCommandAsync(['nvidia-smi', '-q', '-d', 'MEMORY']);
         if (!txt) return [0, 'N/A'];
-        txt = txt.trim();
         if (txt.includes('Failed to initialize NVML') || txt.includes('NVML')) return [0, 'N/A'];
-        let parts = txt.split(',').map(s => s.trim());
-        if (parts.length < 3) return [0, 'N/A'];
-        let util  = parseInt(parts[0]);
-        let mUsed = parseInt(parts[1]);
-        let mTot  = parseInt(parts[2]);
-        if (isNaN(util) || isNaN(mUsed) || isNaN(mTot)) return [0, 'N/A'];
-        return [util, `${mUsed} / ${mTot} MB`];
+
+        // Parse FB Memory Total and Used (actual VRAM consumption)
+        let fbTotalMatch = txt.match(/FB Memory Usage[\s\S]*?Total\s*:\s*(\d+)\s*MiB/);
+        let fbUsedMatch = txt.match(/FB Memory Usage[\s\S]*?Used\s*:\s*(\d+)\s*MiB/);
+        let fbTotal = fbTotalMatch ? parseInt(fbTotalMatch[1]) : 0;
+        let fbUsed = fbUsedMatch ? parseInt(fbUsedMatch[1]) : 0;
+
+        if (fbTotal === 0) return [0, 'N/A'];
+
+        // Get GPU utilization separately
+        let utilTxt = await _execCommandAsync(['nvidia-smi', '--query-gpu=utilization.gpu', '--format=csv,noheader,nounits']);
+        let util = 0;
+        if (utilTxt) util = parseInt(utilTxt.trim()) || 0;
+
+        let totalGB = (fbTotal / 1024).toFixed(2);
+        let usedDisplay = fbUsed < 1024
+            ? `${fbUsed} MB`
+            : `${(fbUsed / 1024).toFixed(2)} GB`;
+        return [util, `${usedDisplay} / ${totalGB} GB`];
     } catch (e) {
         return [0, 'N/A'];
     }
