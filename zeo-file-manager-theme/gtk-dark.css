@@ -1,101 +1,159 @@
-/* Zeo File Manager Theme - macOS-inspired Dark Edition for Nautilus / GTK 4 */
-/* Monochrome Palette: Black, Gray & White with Translucent Surfaces */
+/* ═══════════════════════════════════════════════════════════════════════════════
+ *  ZEO FILE MANAGER THEME (GTK 4 / Nautilus) - Dark Variant
+ *  macOS-inspired Obsidian Glass Theme
+ * ═══════════════════════════════════════════════════════════════════════════════ */
 
-@define-color zeo_bg_dark rgba(18, 18, 22, 0.82);
-@define-color zeo_header_bg rgba(18, 18, 22, 0.88);
-@define-color zeo_sidebar_bg rgba(18, 18, 22, 0.82);
-@define-color zeo_view_bg rgba(18, 18, 22, 0.78);
-@define-color zeo_surface rgba(26, 26, 31, 0.95);
-@define-color zeo_border rgba(255, 255, 255, 0.06);
-@define-color zeo_border_subtle rgba(255, 255, 255, 0.04);
+@define-color window_bg_color #141418;
+@define-color window_fg_color #f3f4f6;
+@define-color headerbar_bg_color #18181d;
+@define-color headerbar_fg_color #f3f4f6;
+@define-color sidebar_bg_color #141418;
+@define-color sidebar_fg_color #9ca3af;
+@define-color view_bg_color #141418;
+@define-color view_fg_color #f3f4f6;
+@define-color popover_bg_color #1e1e24;
+@define-color popover_fg_color #f3f4f6;
 
-@define-color zeo_text_white #ffffff;
-@define-color zeo_text_primary #f3f4f6;
-@define-color zeo_text_muted #9ca3af;
-@define-color zeo_text_dim #6b7280;
-
-@define-color zeo_item_hover rgba(255, 255, 255, 0.08);
-@define-color zeo_item_selected rgba(255, 255, 255, 0.18);
-@define-color zeo_item_active rgba(255, 255, 255, 0.24);
-
-/* Main Window Background */
-.nautilus-window,
-.nautilus-window.background,
-.nautilus-window .background {
-    background-color: @zeo_bg_dark;
-    color: @zeo_text_primary;
+/* ── Window Frame & Base Canvas ───────────────────────────────────────────── */
+window.nautilus-window,
+.nautilus-window {
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.50);
+    background-color: rgba(20, 20, 24, 0.76);
+    color: #f3f4f6;
 }
 
-/* Hide the pane separator between sidebar and content */
-.nautilus-window > contents > separator,
-.nautilus-window paned > separator {
-    min-width: 0;
-    min-height: 0;
+/* Background layers - keep transparent so base window background shows cleanly */
+.nautilus-window .background,
+.nautilus-window navigation-view,
+.nautilus-window navigation-page,
+.nautilus-window adw-toolbar-view,
+.nautilus-window adw-navigation-split-view,
+.nautilus-window scrolledwindow,
+.nautilus-window scrolledwindow > viewport,
+.nautilus-window stack,
+.nautilus-window .view {
     background: transparent;
     background-color: transparent;
-    border: 0;
-    margin: 0;
-    padding: 0;
-    opacity: 0;
+    color: #f3f4f6;
 }
 
-/* Restore sidebar section separators */
-.nautilus-window sidebar separator,
-.nautilus-window .sidebar separator,
-.nautilus-window .navigation-sidebar separator,
-.nautilus-window navigation-sidebar separator {
-    min-height: 1px;
-    margin: 6px 12px;
-    background: rgba(255, 255, 255, 0.12);
-    opacity: 1;
-}
-
-/* Headerbar / Titlebar */
+/* ── Dual Headerbars / Unified Top Bar ───────────────────────────────────── */
 .nautilus-window headerbar,
 .nautilus-window .titlebar {
-    min-height: 42px;
+    min-height: 44px;
     padding: 0 10px;
-    background-color: @zeo_header_bg;
+    background: rgba(24, 24, 29, 0.82);
+    background-color: rgba(24, 24, 29, 0.82);
     border: 0;
-    border-bottom: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     box-shadow: none;
-    color: @zeo_text_primary;
+    color: #f3f4f6;
 }
 
+/* Clean unified header buttons */
 .nautilus-window headerbar button,
 .nautilus-window .titlebar button {
-    min-width: 28px;
-    min-height: 28px;
+    min-width: 30px;
+    min-height: 30px;
+    padding: 4px 6px;
+    margin: 2px;
     border: 0;
-    border-radius: 7px;
+    border-radius: 6px;
     background: transparent;
-    color: @zeo_text_muted;
+    color: #9ca3af;
     box-shadow: none;
 }
 
 .nautilus-window headerbar button:hover,
 .nautilus-window .titlebar button:hover {
-    background: @zeo_item_hover;
-    color: @zeo_text_white;
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
 }
 
 .nautilus-window headerbar button:active,
 .nautilus-window headerbar button:checked,
 .nautilus-window .titlebar button:active,
 .nautilus-window .titlebar button:checked {
-    background: @zeo_item_selected;
-    color: @zeo_text_white;
+    background: rgba(255, 255, 255, 0.16);
+    color: #ffffff;
 }
 
-/* Navigation Sidebar */
+/* Linked button groups (like navigation < > and view switches) */
+.nautilus-window headerbar .linked button,
+.nautilus-window .linked:not(.vertical) > button {
+    border: 0;
+    box-shadow: none;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.nautilus-window headerbar .linked button:hover {
+    background: rgba(255, 255, 255, 0.10);
+}
+
+/* ── Path Bar / Breadcrumbs ───────────────────────────────────────────────── */
+.nautilus-window .path-bar,
+.nautilus-window .nautilus-path-bar {
+    margin: 0 4px;
+}
+
+.nautilus-window .path-bar button,
+.nautilus-window .nautilus-path-bar button {
+    min-height: 28px;
+    padding: 2px 10px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #f3f4f6;
+    font-weight: 500;
+    border: 0;
+}
+
+.nautilus-window .path-bar button:hover,
+.nautilus-window .nautilus-path-bar button:hover {
+    background: rgba(255, 255, 255, 0.10);
+    color: #ffffff;
+}
+
+.nautilus-window .path-bar button:checked,
+.nautilus-window .nautilus-path-bar button:checked {
+    background: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* ── Navigation Sidebar ───────────────────────────────────────────────────── */
 .nautilus-window sidebar,
 .nautilus-window .sidebar,
 .nautilus-window .navigation-sidebar,
 .nautilus-window navigation-sidebar {
-    padding: 10px 8px;
-    background-color: @zeo_sidebar_bg;
-    border-right: 0;
-    color: @zeo_text_muted;
+    padding: 8px;
+    background: rgba(20, 20, 24, 0.78);
+    background-color: rgba(20, 20, 24, 0.78);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    color: #9ca3af;
+}
+
+/* Hide pane separator between sidebar and main content */
+.nautilus-window > contents > separator,
+.nautilus-window paned > separator,
+.nautilus-window adw-navigation-split-view > separator {
+    min-width: 0;
+    min-height: 0;
+    background: transparent;
+    border: 0;
+    opacity: 0;
+}
+
+/* Sidebar section separators */
+.nautilus-window sidebar separator,
+.nautilus-window .sidebar separator,
+.nautilus-window .navigation-sidebar separator,
+.nautilus-window navigation-sidebar separator {
+    min-height: 1px;
+    margin: 6px 10px;
+    background: rgba(255, 255, 255, 0.08);
+    opacity: 1;
 }
 
 .nautilus-window sidebar row,
@@ -104,10 +162,10 @@
 .nautilus-window navigation-sidebar row,
 .nautilus-window .sidebar-row {
     min-height: 32px;
-    margin: 2px 0;
-    padding: 0 8px;
+    margin: 2px 4px;
+    padding: 0 10px;
     border-radius: 7px;
-    color: @zeo_text_muted;
+    color: #9ca3af;
 }
 
 .nautilus-window sidebar row:hover,
@@ -115,8 +173,8 @@
 .nautilus-window .navigation-sidebar row:hover,
 .nautilus-window navigation-sidebar row:hover,
 .nautilus-window .sidebar-row:hover {
-    background: @zeo_item_hover;
-    color: @zeo_text_white;
+    background: rgba(255, 255, 255, 0.07);
+    color: #ffffff;
 }
 
 .nautilus-window sidebar row:selected,
@@ -124,117 +182,61 @@
 .nautilus-window .navigation-sidebar row:selected,
 .nautilus-window navigation-sidebar row:selected,
 .nautilus-window .sidebar-row:selected {
-    background: @zeo_item_selected;
-    color: @zeo_text_white;
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
     font-weight: 600;
 }
 
-/* Main View Surfaces (Grid / List) */
+/* ── Main View Surfaces (Grid / List) ─────────────────────────────────────── */
 .nautilus-window .nautilus-grid-view,
 .nautilus-window .nautilus-list-view,
 .nautilus-window .view {
-    background-color: transparent;
     background: transparent;
-    color: @zeo_text_primary;
+    color: #f3f4f6;
 }
 
 .nautilus-window flowboxchild,
 .nautilus-window .nautilus-grid-view flowboxchild {
-    padding: 8px;
+    padding: 10px;
+    margin: 4px;
     border-radius: 9px;
-    color: @zeo_text_primary;
+    color: #f3f4f6;
 }
 
 .nautilus-window flowboxchild:hover,
 .nautilus-window .nautilus-grid-view flowboxchild:hover {
-    background: @zeo_item_hover;
-    color: @zeo_text_white;
+    background: rgba(255, 255, 255, 0.07);
+    color: #ffffff;
 }
 
 .nautilus-window flowboxchild:selected,
 .nautilus-window .nautilus-grid-view flowboxchild:selected {
-    background: @zeo_item_selected;
-    color: @zeo_text_white;
-    border: 1px solid @zeo_border;
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.10);
 }
 
 .nautilus-window .nautilus-list-view row,
 .nautilus-window .nautilus-grid-view .view-item {
-    border-radius: 8px;
-    color: @zeo_text_primary;
+    padding: 4px 8px;
+    border-radius: 7px;
+    color: #f3f4f6;
 }
 
 .nautilus-window .nautilus-list-view row:hover,
 .nautilus-window .nautilus-grid-view .view-item:hover {
-    background: @zeo_item_hover;
-    color: @zeo_text_white;
+    background: rgba(255, 255, 255, 0.07);
+    color: #ffffff;
 }
 
 .nautilus-window .nautilus-list-view row:selected,
 .nautilus-window .nautilus-grid-view .view-item:selected {
-    background: @zeo_item_selected;
-    color: @zeo_text_white;
-    border: 1px solid @zeo_border;
-}
-
-/* Search Entry & Input Fields */
-.nautilus-window entry,
-.nautilus-window searchentry,
-.nautilus-window .searchbar {
-    min-height: 30px;
-    padding: 0 10px;
-    background: rgba(0, 0, 0, 0.35);
-    border: 1px solid @zeo_border;
-    border-radius: 8px;
-    color: @zeo_text_white;
-    box-shadow: none;
-}
-
-.nautilus-window entry:focus,
-.nautilus-window searchentry:focus {
-    border-color: rgba(255, 255, 255, 0.40);
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
-}
-
-/* Popover & Context Menus */
-.nautilus-window popover,
-.nautilus-window popover.background,
-.nautilus-window menu {
-    padding: 6px;
-    background: #1e1e24;
-    background-color: #1e1e24;
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
     border: 1px solid rgba(255, 255, 255, 0.10);
-    border-radius: 10px;
-    color: @zeo_text_primary;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 1);
-    opacity: 1;
 }
 
-.nautilus-window popover contents,
-.nautilus-window popover > contents,
-.nautilus-window popover menu,
-.nautilus-window popover > menu,
-.nautilus-window popover .menu {
-    background: #1e1e24;
-    background-color: #1e1e24;
-    border: 0;
-    border-radius: 8px;
-    box-shadow: none;
-    padding: 0;
-}
-
-.nautilus-window modelbutton {
-    min-height: 30px;
-    border-radius: 6px;
-    color: @zeo_text_primary;
-}
-
-.nautilus-window modelbutton:hover {
-    background: @zeo_item_hover;
-    color: @zeo_text_white;
-}
-
-/* macOS-Style Window Traffic Light Controls */
+/* ── macOS Window Traffic Light Controls ──────────────────────────────────── */
 .nautilus-window headerbar windowcontrols {
     margin-top: 14px;
     margin-bottom: 14px;
@@ -262,48 +264,76 @@
     margin: 0;
 }
 
-/* Window Control Colors — GNOME right-side order: minimize, maximize, close */
-.nautilus-window headerbar windowcontrols button:nth-child(1) {
-    background: #febc2e;
-}
-
-.nautilus-window headerbar windowcontrols button:nth-child(2) {
-    background: #28c840;
-}
-
-.nautilus-window headerbar windowcontrols button:nth-child(3) {
-    background: #ff5f57;
-}
+/* Colors: GNOME order is Minimize (yellow), Maximize (green), Close (red) */
+.nautilus-window headerbar windowcontrols button:nth-child(1) { background: #febc2e; }
+.nautilus-window headerbar windowcontrols button:nth-child(2) { background: #28c840; }
+.nautilus-window headerbar windowcontrols button:nth-child(3) { background: #ff5f57; }
 
 .nautilus-window headerbar windowcontrols button:hover {
     filter: brightness(1.2);
 }
 
-/* Path Bar */
-.nautilus-window .path-bar button,
-.nautilus-window .nautilus-path-bar button {
-    min-height: 28px;
-    padding: 0 8px;
+/* ── Search Entry ─────────────────────────────────────────────────────────── */
+.nautilus-window entry,
+.nautilus-window searchentry,
+.nautilus-window .searchbar {
+    min-height: 30px;
+    padding: 0 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    color: #ffffff;
+    box-shadow: none;
+}
+
+.nautilus-window entry:focus,
+.nautilus-window searchentry:focus {
+    border-color: rgba(255, 255, 255, 0.30);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
+/* ── Popovers & Menus ─────────────────────────────────────────────────────── */
+.nautilus-window popover,
+.nautilus-window popover.background,
+.nautilus-window menu {
+    padding: 6px;
+    background: #1e1e24;
+    background-color: #1e1e24;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    color: #f3f4f6;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.50);
+    opacity: 1;
+}
+
+.nautilus-window popover contents,
+.nautilus-window popover > contents,
+.nautilus-window popover menu,
+.nautilus-window popover > menu,
+.nautilus-window popover .menu {
+    background: #1e1e24;
+    background-color: #1e1e24;
+    border: 0;
+    border-radius: 8px;
+    box-shadow: none;
+    padding: 0;
+}
+
+.nautilus-window modelbutton {
+    min-height: 30px;
     border-radius: 6px;
-    color: @zeo_text_muted;
+    color: #f3f4f6;
 }
 
-.nautilus-window .path-bar button:hover,
-.nautilus-window .nautilus-path-bar button:hover {
-    background: @zeo_item_hover;
-    color: @zeo_text_white;
+.nautilus-window modelbutton:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
 }
 
-.nautilus-window .path-bar button:checked,
-.nautilus-window .nautilus-path-bar button:checked {
-    background: @zeo_item_selected;
-    color: @zeo_text_white;
-}
-
-/* Column Headers & List Details */
+/* ── Column Headers & Details ─────────────────────────────────────────────── */
 .nautilus-window columnview header button {
     background: transparent;
-    color: @zeo_text_dim;
+    color: rgba(255, 255, 255, 0.55);
     font-size: 0.85em;
     font-weight: 600;
 }

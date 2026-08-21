@@ -1,5 +1,16 @@
-/* Zeo File Manager Theme - macOS Finder Light Edition for Nautilus / GTK 4 */
-/* Palette: Frosted Silver, Translucent White & Charcoal */
+/* Libadwaita Palette Overrides */
+@define-color window_bg_color rgba(246, 246, 248, 0.72);
+@define-color window_fg_color #1d1d1f;
+@define-color view_bg_color rgba(255, 255, 255, 0.65);
+@define-color view_fg_color #1d1d1f;
+@define-color headerbar_bg_color rgba(246, 246, 248, 0.76);
+@define-color headerbar_fg_color #1d1d1f;
+@define-color sidebar_bg_color rgba(238, 238, 242, 0.72);
+@define-color sidebar_fg_color #636366;
+@define-color card_bg_color rgba(255, 255, 255, 0.85);
+@define-color card_fg_color #1d1d1f;
+@define-color popover_bg_color #ffffff;
+@define-color popover_fg_color #1d1d1f;
 
 @define-color zeo_bg_light rgba(246, 246, 248, 0.72);
 @define-color zeo_header_bg rgba(246, 246, 248, 0.76);
@@ -18,10 +29,17 @@
 @define-color zeo_item_selected rgba(0, 0, 0, 0.10);
 @define-color zeo_item_active rgba(0, 0, 0, 0.15);
 
-/* Main Window Background */
+/* Main Window Background & Libadwaita Containers */
 .nautilus-window,
 .nautilus-window.background,
-.nautilus-window .background {
+.nautilus-window .background,
+.nautilus-window navigation-view,
+.nautilus-window navigation-page,
+.nautilus-window adw-toolbar-view,
+.nautilus-window scrolledwindow,
+.nautilus-window scrolledwindow > viewport,
+.nautilus-window stack,
+.nautilus-window .view {
     background-color: @zeo_bg_light;
     color: @zeo_text_primary;
 }

@@ -829,10 +829,37 @@ export default class ZeoWidgetsExtension extends Extension {
         // Auto-sync GNOME Shell user theme with system Dark/Light mode
         this._desktopSettings = new Gio.Settings({ schema_id: 'org.gnome.desktop.interface' });
         
+        const syncGtk4Theme = () => {
+            try {
+                let baseDir = this.dir.get_path();
+                try {
+                    let resolved = GLib.file_read_link(baseDir);
+                    if (resolved) {
+                        if (!GLib.path_is_absolute(resolved))
+                            resolved = GLib.build_filenamev([GLib.path_get_dirname(baseDir), resolved]);
+                        baseDir = resolved;
+                    }
+                } catch (_) {}
+                const repoDir = GLib.path_get_dirname(baseDir);
+                const themeFile = GLib.build_filenamev([repoDir, 'zeo-file-manager-theme', 'gtk.css']);
+                
+                if (GLib.file_test(themeFile, GLib.FileTest.EXISTS)) {
+                    const gtk4Dir = GLib.build_filenamev([GLib.get_home_dir(), '.config', 'gtk-4.0']);
+                    GLib.mkdir_with_parents(gtk4Dir, 0o755);
+                    const gtk4CssPath = GLib.build_filenamev([gtk4Dir, 'gtk.css']);
+                    const content = `@import url("${themeFile}");\n`;
+                    GLib.file_set_contents(gtk4CssPath, content);
+                }
+            } catch (err) {
+                console.warn('Failed to sync GTK 4 theme:', err);
+            }
+        };
+
         const updateThemeMode = () => {
             const scheme = this._desktopSettings.get_string('color-scheme');
             const isLight = (scheme === 'prefer-light' || scheme === 'default');
             this._widget?.setTheme(isLight);
+            syncGtk4Theme();
         };
         updateThemeMode();
 
@@ -862,6 +889,7 @@ export default class ZeoWidgetsExtension extends Extension {
             this._desktopSettingsId = this._desktopSettings.connect('changed::color-scheme', updateThemeMode);
             console.warn('user-theme extension not found or schemas missing', e);
         }
+
     }
 
     disable() {

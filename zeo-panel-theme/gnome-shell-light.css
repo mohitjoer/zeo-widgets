@@ -6,7 +6,7 @@
 
 /* ── Typography & Global Shell Accent Defaults ────────────────────────────── */
 stage {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", "Cantarell", "Ubuntu", sans-serif;
+    font-family: "SF Pro Text", "SF Pro Display", "Inter", "Cantarell", "Ubuntu", sans-serif;
     font-size: 11pt;
     color: #1d1d1f;
     -st-accent-color: #1d1d1f;
@@ -275,6 +275,28 @@ stage #panel .panel-button {
     background-color: rgba(0, 0, 0, 0.08);
     height: 1px;
     margin: 6px 4px;
+}
+
+/* Quick Settings Wi-Fi Submenu: Hide wifi and signal strength icons in access point list */
+.nm-network-item > StBoxLayout,
+.nm-network-item StBoxLayout {
+    width: 0px;
+    height: 0px;
+    margin: 0px;
+    padding: 0px;
+    spacing: 0px;
+    opacity: 0;
+}
+
+.nm-network-item > StBoxLayout StIcon,
+.nm-network-item StBoxLayout StIcon,
+.nm-network-item .wireless-secure-icon {
+    width: 0px;
+    height: 0px;
+    icon-size: 0px;
+    margin: 0px;
+    padding: 0px;
+    opacity: 0;
 }
 
 /* Quick Settings Box */

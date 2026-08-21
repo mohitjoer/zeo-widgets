@@ -12,7 +12,7 @@
 
 .notification-banner .message-title,
 .notification-banner.dark-theme .message-title {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif !important;
+    font-family: "SF Pro Text", "Inter", sans-serif !important;
     font-weight: 600 !important;
     color: #ffffff !important;
     margin-bottom: 4px !important;
@@ -20,7 +20,7 @@
 
 .notification-banner .message-body,
 .notification-banner.dark-theme .message-body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif !important;
+    font-family: "SF Pro Text", "Inter", sans-serif !important;
     color: rgba(255, 255, 255, 0.8) !important;
     line-height: 1.4 !important;
 }
@@ -37,14 +37,14 @@
 }
 
 .notification-banner.light-theme .message-title {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif !important;
+    font-family: "SF Pro Text", "Inter", sans-serif !important;
     font-weight: 600 !important;
     color: #1d1d1f !important;
     margin-bottom: 4px !important;
 }
 
 .notification-banner.light-theme .message-body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif !important;
+    font-family: "SF Pro Text", "Inter", sans-serif !important;
     color: rgba(0, 0, 0, 0.75) !important;
     line-height: 1.4 !important;
 }

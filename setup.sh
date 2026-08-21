@@ -28,15 +28,9 @@ mkdir -p "$HOME/.local/share/themes/Zeo-Light/gnome-shell"
 ln -sfn "$DIR/zeo-panel-theme/gnome-shell-dark.css" "$HOME/.local/share/themes/Zeo-Dark/gnome-shell/gnome-shell.css"
 ln -sfn "$DIR/zeo-panel-theme/gnome-shell-light.css" "$HOME/.local/share/themes/Zeo-Light/gnome-shell/gnome-shell.css"
 
-# Setup Nautilus / GTK 4 File Manager Theme
+# Setup Nautilus / GTK 4 File Manager Theme & Shell Theme
 mkdir -p "$HOME/.config/gtk-4.0"
-if [ -f "$HOME/.config/gtk-4.0/gtk.css" ]; then
-    if ! grep -q "zeo-file-manager-theme" "$HOME/.config/gtk-4.0/gtk.css"; then
-        printf '\n@import url("%s/zeo-file-manager-theme/gtk.css");\n' "$DIR" >> "$HOME/.config/gtk-4.0/gtk.css"
-    fi
-else
-    printf '@import url("%s/zeo-file-manager-theme/gtk.css");\n' "$DIR" > "$HOME/.config/gtk-4.0/gtk.css"
-fi
+printf '@import url("%s/zeo-file-manager-theme/gtk.css");\n' "$DIR" > "$HOME/.config/gtk-4.0/gtk.css"
 
 if which gsettings >/dev/null 2>&1; then
     CURRENT_SCHEME=$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null || echo "'default'")

@@ -225,16 +225,76 @@ const BluezDeviceIface = `<node>
 </node>`;
 const BluezDeviceProxy = Gio.DBusProxy.makeProxyWrapper(BluezDeviceIface);
 
+/* ── Bluetooth Indicator Helpers ─────────────────────────────── */
+function _isBluetoothPowered(indicator) {
+    if (!indicator) return false;
+    if (indicator._client) {
+        if (typeof indicator._client.active === 'boolean') {
+            return indicator._client.active;
+        }
+        if (typeof indicator._client.default_adapter_powered === 'boolean') {
+            return indicator._client.default_adapter_powered;
+        }
+        if (indicator._client._client && typeof indicator._client._client.default_adapter_powered === 'boolean') {
+            return indicator._client._client.default_adapter_powered;
+        }
+    }
+    if (indicator.quickSettingsItems) {
+        for (let item of indicator.quickSettingsItems) {
+            if (item && typeof item.checked === 'boolean') {
+                return item.checked;
+            }
+        }
+    }
+    if (typeof indicator.checked === 'boolean') {
+        return indicator.checked;
+    }
+    return false;
+}
+
+function _isBluetoothConnected(indicator, ext) {
+    if (ext?._widget?._hasConnectedDevices || ext?._hasConnectedDevices) return true;
+    if (indicator && indicator._client && typeof indicator._client.getDevices === 'function') {
+        try {
+            const devs = [...indicator._client.getDevices()];
+            if (devs.some(d => d.connected)) return true;
+        } catch(e) {}
+    }
+    return false;
+}
+
+function _updateIndicator(indicator, ext) {
+    if (!indicator || !indicator._indicator) return;
+    const isPowered = _isBluetoothPowered(indicator);
+    if (!isPowered) {
+        indicator._indicator.visible = false;
+        indicator.visible = false;
+        return;
+    }
+
+    const isConnected = _isBluetoothConnected(indicator, ext);
+    indicator._indicator.icon_name = isConnected
+        ? 'bluetooth-connected-symbolic'
+        : 'bluetooth-active-symbolic';
+    indicator._indicator.visible = true;
+    if (typeof indicator._syncIndicatorsVisible === 'function') {
+        indicator._syncIndicatorsVisible();
+    } else {
+        indicator.visible = true;
+    }
+}
+
 /* ── Bluetooth Monitor Widget ────────────────────────────────── */
 class BluetoothWidget extends BaseWidget {
     static { GObject.registerClass(this); }
-    constructor(settings) {
+    constructor(settings, ext) {
         super({
             vertical: true,
             style_class: 'zeo-sysmon-card',
             x_align: Clutter.ActorAlign.CENTER,
         });
         this._settings = settings;
+        this._ext = ext;
 
         this._row = new St.BoxLayout({
             style_class: 'zeo-ring-row',
@@ -349,7 +409,28 @@ class BluetoothWidget extends BaseWidget {
             this._noDeviceLabel.visible = false;
             this._row.visible = hasDevices;
             this.visible = hasDevices;
+            this._hasConnectedDevices = hasDevices;
+            this._updatePanelBluetoothIcon(hasDevices);
         });
+    }
+
+    _updatePanelBluetoothIcon(isConnected) {
+        try {
+            const qs = Main.panel?.statusArea?.quickSettings;
+            if (!qs) return;
+
+            if (qs._bluetooth) {
+                _updateIndicator(qs._bluetooth, this._ext || this);
+            }
+            if (qs._indicators) {
+                const children = qs._indicators.get_children ? qs._indicators.get_children() : qs._indicators;
+                for (let ind of children) {
+                    if (ind && (ind._client || ind.constructor?.name?.includes('Bluetooth') || (ind._indicator && ind._indicator.icon_name?.includes('bluetooth')))) {
+                        _updateIndicator(ind, this._ext || this);
+                    }
+                }
+            }
+        } catch(e) {}
     }
 
     setTheme(isLight) {
@@ -401,7 +482,7 @@ class BluetoothWidget extends BaseWidget {
 export default class ZeoBluetoothDeviceExtension extends Extension {
     enable() {
         this._settings = this.getSettings();
-        this._widget = new BluetoothWidget(this._settings);
+        this._widget = new BluetoothWidget(this._settings, this);
         Main.layoutManager._backgroundGroup.add_child(this._widget);
 
         this._desktopSettings = new Gio.Settings({ schema_id: 'org.gnome.desktop.interface' });
@@ -412,9 +493,105 @@ export default class ZeoBluetoothDeviceExtension extends Extension {
         };
         updateThemeMode();
         this._desktopSettingsId = this._desktopSettings.connect('changed::color-scheme', updateThemeMode);
+
+        // Hook QuickSettings Bluetooth indicator to stay visible and show proper icon
+        this._setupBluetoothIndicatorHook();
+    }
+
+    _setupBluetoothIndicatorHook() {
+        try {
+            const qs = Main.panel?.statusArea?.quickSettings;
+            if (!qs) return;
+
+            const ext = this;
+            const hookIndicator = (indicator) => {
+                if (!indicator || indicator._zeoHooked) return;
+                indicator._zeoHooked = true;
+
+                const origSync = indicator._sync;
+                indicator._origZeoSync = origSync;
+                indicator._sync = function() {
+                    _updateIndicator(indicator, ext);
+                };
+
+                if (indicator._client) {
+                    if (typeof indicator._client.connect === 'function') {
+                        try {
+                            indicator._zeoActiveId = indicator._client.connect('notify::active', () => {
+                                _updateIndicator(indicator, ext);
+                            });
+                        } catch(e) {}
+                        try {
+                            indicator._zeoAdapterStateId = indicator._client.connect('notify::adapter-state', () => {
+                                _updateIndicator(indicator, ext);
+                            });
+                        } catch(e) {}
+                    }
+                }
+
+                _updateIndicator(indicator, ext);
+            };
+
+            const findAndHook = () => {
+                if (qs._bluetooth) hookIndicator(qs._bluetooth);
+                if (qs._indicators) {
+                    const children = qs._indicators.get_children ? qs._indicators.get_children() : qs._indicators;
+                    for (let ind of children) {
+                        if (ind && (ind._client || ind.constructor?.name?.includes('Bluetooth') || (ind._indicator && ind._indicator.icon_name?.includes('bluetooth')))) {
+                            hookIndicator(ind);
+                        }
+                    }
+                }
+            };
+
+            findAndHook();
+            this._hookTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
+                findAndHook();
+                this._hookTimeoutId = null;
+                return GLib.SOURCE_REMOVE;
+            });
+        } catch(e) {}
     }
 
     disable() {
+        if (this._hookTimeoutId) {
+            GLib.Source.remove(this._hookTimeoutId);
+            this._hookTimeoutId = null;
+        }
+
+        // Restore hooked sync methods
+        try {
+            const qs = Main.panel?.statusArea?.quickSettings;
+            const unhookIndicator = (indicator) => {
+                if (indicator && indicator._zeoHooked) {
+                    if (indicator._origZeoSync) {
+                        indicator._sync = indicator._origZeoSync;
+                        indicator._origZeoSync = null;
+                    }
+                    if (indicator._client) {
+                        if (indicator._zeoActiveId) {
+                            try { indicator._client.disconnect(indicator._zeoActiveId); } catch(e) {}
+                            indicator._zeoActiveId = null;
+                        }
+                        if (indicator._zeoAdapterStateId) {
+                            try { indicator._client.disconnect(indicator._zeoAdapterStateId); } catch(e) {}
+                            indicator._zeoAdapterStateId = null;
+                        }
+                    }
+                    indicator._zeoHooked = false;
+                    try { indicator._sync?.(); } catch(e) {}
+                }
+            };
+
+            if (qs?._bluetooth) unhookIndicator(qs._bluetooth);
+            if (qs?._indicators) {
+                const children = qs._indicators.get_children ? qs._indicators.get_children() : qs._indicators;
+                for (let ind of children) {
+                    unhookIndicator(ind);
+                }
+            }
+        } catch(e) {}
+
         if (this._desktopSettings && this._desktopSettingsId) {
             this._desktopSettings.disconnect(this._desktopSettingsId);
             this._desktopSettingsId = null;
