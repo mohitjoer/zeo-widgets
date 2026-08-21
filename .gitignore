@@ -1,2 +1,6 @@
 .agent
 gschemas.compiled
+agents/
+AGENTS.md
+GEMINI.md
+CLAUDE.md

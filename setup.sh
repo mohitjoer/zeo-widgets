@@ -19,14 +19,12 @@ mkdir -p "$EXT_DIR"
 # Use symbolic links so changes in the repo are instantly reflected in GNOME
 ln -sfn "$DIR/zeo-widgets@mohitjoer" "$EXT_DIR/zeo-widgets@mohitjoer"
 ln -sfn "$DIR/zeo-notifications@mohitjoer" "$EXT_DIR/zeo-notifications@mohitjoer"
-ln -sfn "$DIR/zeo-search@mohitjoer" "$EXT_DIR/zeo-search@mohitjoer"
 ln -sfn "$DIR/zeo-blutooth-device@mohitjoer" "$EXT_DIR/zeo-blutooth-device@mohitjoer"
 
 # 3. Enable the extensions
 echo "[3/3] Enabling extensions..."
 gnome-extensions enable zeo-widgets@mohitjoer
 gnome-extensions enable zeo-notifications@mohitjoer
-gnome-extensions enable zeo-search@mohitjoer
 gnome-extensions enable zeo-blutooth-device@mohitjoer
 
 echo "=== Setup Complete! ==="
