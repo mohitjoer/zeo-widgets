@@ -211,7 +211,7 @@ function _shortGpuName(name) {
 }
 
 /* ── Cairo ring painter ──────────────────────────────────────── */
-function _paintRing(cr, width, height, pct, pal) {
+function _paintRing(cr, width, height, pct, pal, isLight = false) {
     const size = Math.min(width, height);
     const cx = width / 2;
     const cy = height / 2;
@@ -225,7 +225,11 @@ function _paintRing(cr, width, height, pct, pal) {
     // Background track (full dim circle)
     cr.setLineWidth(RING_STROKE);
     cr.setLineCap(Cairo.LineCap.ROUND);
-    cr.setSourceRGBA(1, 1, 1, 0.07);
+    if (isLight) {
+        cr.setSourceRGBA(0, 0, 0, 0.08);
+    } else {
+        cr.setSourceRGBA(1, 1, 1, 0.07);
+    }
     cr.arc(cx, cy, RING_RADIUS, 0, 2 * Math.PI);
     cr.stroke();
 
@@ -323,6 +327,7 @@ class RingCell {
     constructor(label, palette) {
         this._pct = 0;
         this._pal = palette;
+        this._isLight = false;
 
         // St.DrawingArea for Cairo ring drawing
         this._drawingArea = new St.DrawingArea({
@@ -334,7 +339,7 @@ class RingCell {
         this._drawingArea.connectObject('repaint', (area) => {
             let cr = area.get_context();
             let [w, h] = area.get_surface_size();
-            _paintRing(cr, w, h, this._pct, this._pal);
+            _paintRing(cr, w, h, this._pct, this._pal, this._isLight);
             cr.$dispose();
         }, this._signalTracker);
 
@@ -378,6 +383,13 @@ class RingCell {
         this.actor.add_child(stack);
         this.actor.add_child(this._nameLabel);
         this.actor.add_child(this._detailLabel);
+    }
+
+    setTheme(isLight) {
+        this._isLight = isLight;
+        if (this._drawingArea) {
+            this._drawingArea.queue_repaint();
+        }
     }
 
     update(pct, detail) {
@@ -741,6 +753,21 @@ class SystemMonitorWidget extends BaseWidget {
         }
     }
 
+    setTheme(isLight) {
+        this._isLight = isLight;
+        if (isLight) {
+            this.add_style_class_name('light-theme');
+        } else {
+            this.remove_style_class_name('light-theme');
+        }
+        if (this._cpuCell) this._cpuCell.setTheme(isLight);
+        if (this._memCell) this._memCell.setTheme(isLight);
+        if (this._diskCell) this._diskCell.setTheme(isLight);
+        for (let cell of this._gpuCells) {
+            if (cell) cell.setTheme(isLight);
+        }
+    }
+
     destroy() {
         this._settings?.disconnectObject(this);
         if (this._timerId) {
@@ -798,9 +825,54 @@ export default class ZeoWidgetsExtension extends Extension {
                 updatePos();
             }
         }, this);
+
+        // Auto-sync GNOME Shell user theme with system Dark/Light mode
+        this._desktopSettings = new Gio.Settings({ schema_id: 'org.gnome.desktop.interface' });
+        
+        const updateThemeMode = () => {
+            const scheme = this._desktopSettings.get_string('color-scheme');
+            const isLight = (scheme === 'prefer-light' || scheme === 'default');
+            this._widget?.setTheme(isLight);
+        };
+        updateThemeMode();
+
+        try {
+            this._userThemeSettings = new Gio.Settings({ schema_id: 'org.gnome.shell.extensions.user-theme' });
+            
+            this._syncTheme = () => {
+                const scheme = this._desktopSettings.get_string('color-scheme');
+                const isDark = (scheme === 'prefer-dark');
+                const currentTheme = this._userThemeSettings.get_string('name');
+                const targetTheme = isDark ? 'Zeo-Dark' : 'Zeo-Light';
+                
+                if (currentTheme !== targetTheme) {
+                    this._userThemeSettings.set_string('name', targetTheme);
+                }
+            };
+
+            // Run initial sync
+            this._syncTheme();
+
+            // Listen to system changes
+            this._desktopSettingsId = this._desktopSettings.connect('changed::color-scheme', () => {
+                updateThemeMode();
+                this._syncTheme();
+            });
+        } catch (e) {
+            this._desktopSettingsId = this._desktopSettings.connect('changed::color-scheme', updateThemeMode);
+            console.warn('user-theme extension not found or schemas missing', e);
+        }
     }
 
     disable() {
+        if (this._desktopSettings && this._desktopSettingsId) {
+            this._desktopSettings.disconnect(this._desktopSettingsId);
+            this._desktopSettingsId = null;
+        }
+        this._desktopSettings = null;
+        this._userThemeSettings = null;
+        this._syncTheme = null;
+
         this._settings?.disconnectObject(this);
         this._settings = null;
         

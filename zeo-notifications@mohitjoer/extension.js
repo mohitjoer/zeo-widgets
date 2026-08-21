@@ -2,12 +2,14 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { State, Urgency } from 'resource:///org/gnome/shell/ui/messageTray.js';
 import Clutter from 'gi://Clutter';
+import Gio from 'gi://Gio';
 
 export default class ZeoNotificationsExtension extends Extension {
     enable() {
         if (!Main.messageTray) return;
         
         this._settings = this.getSettings();
+        this._desktopSettings = new Gio.Settings({ schema_id: 'org.gnome.desktop.interface' });
         const ext = this;
 
         const updateAlignment = () => {
@@ -60,7 +62,18 @@ export default class ZeoNotificationsExtension extends Extension {
             
             this._bannerBin.style = ''; // Clear bin style to prevent black corners
             if (this._banner) {
-                let s = `background-color: rgba(40, 40, 42, ${bgOpacity}) !important; `;
+                const scheme = ext._desktopSettings?.get_string('color-scheme') || '';
+                const isLight = (scheme === 'prefer-light' || scheme === 'default');
+                if (isLight) {
+                    this._banner.add_style_class_name('light-theme');
+                    this._banner.remove_style_class_name('dark-theme');
+                } else {
+                    this._banner.add_style_class_name('dark-theme');
+                    this._banner.remove_style_class_name('light-theme');
+                }
+                const bgRgba = isLight ? `rgba(250, 250, 252, ${bgOpacity})` : `rgba(32, 32, 36, ${bgOpacity})`;
+                const borderRgba = isLight ? `rgba(0, 0, 0, 0.1)` : `rgba(255, 255, 255, 0.12)`;
+                let s = `background-color: ${bgRgba} !important; border: 1px solid ${borderRgba} !important; `;
                 s += `width: ${bWidth}px !important; min-width: ${bWidth}px !important; max-width: ${bWidth}px !important; `;
                 if (bHeight > 0) s += `min-height: ${bHeight}px !important; `;
                 this._banner.style = s;
@@ -134,5 +147,6 @@ export default class ZeoNotificationsExtension extends Extension {
             this._settingsChangedId = null;
         }
         this._settings = null;
+        this._desktopSettings = null;
     }
 }

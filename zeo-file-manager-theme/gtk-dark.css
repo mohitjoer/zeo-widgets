@@ -1,15 +1,13 @@
-/* ═══════════════════════════════════════════════════════════════════════════════
- *  ZEO FILE MANAGER THEME (GTK 4 / Nautilus)
- *  Supports dynamic switching between Dark and Light mode
- *  Monochrome Translucent Glass Surfaces
- * ═══════════════════════════════════════════════════════════════════════════════ */
+/* Zeo File Manager Theme - macOS-inspired Dark Edition for Nautilus / GTK 4 */
+/* Monochrome Palette: Black, Gray & White with Translucent Surfaces */
 
-/* ── Default: Dark Mode ───────────────────────────────────────────────────── */
 @define-color zeo_bg_dark rgba(18, 18, 22, 0.82);
 @define-color zeo_header_bg rgba(18, 18, 22, 0.88);
 @define-color zeo_sidebar_bg rgba(18, 18, 22, 0.82);
+@define-color zeo_view_bg rgba(18, 18, 22, 0.78);
 @define-color zeo_surface rgba(26, 26, 31, 0.95);
 @define-color zeo_border rgba(255, 255, 255, 0.06);
+@define-color zeo_border_subtle rgba(255, 255, 255, 0.04);
 
 @define-color zeo_text_white #ffffff;
 @define-color zeo_text_primary #f3f4f6;
@@ -18,6 +16,7 @@
 
 @define-color zeo_item_hover rgba(255, 255, 255, 0.08);
 @define-color zeo_item_selected rgba(255, 255, 255, 0.18);
+@define-color zeo_item_active rgba(255, 255, 255, 0.24);
 
 /* Main Window Background */
 .nautilus-window,
@@ -27,7 +26,7 @@
     color: @zeo_text_primary;
 }
 
-/* Hide pane separator */
+/* Hide the pane separator between sidebar and content */
 .nautilus-window > contents > separator,
 .nautilus-window paned > separator {
     min-width: 0;
@@ -40,7 +39,7 @@
     opacity: 0;
 }
 
-/* Sidebar section separators */
+/* Restore sidebar section separators */
 .nautilus-window sidebar separator,
 .nautilus-window .sidebar separator,
 .nautilus-window .navigation-sidebar separator,
@@ -197,7 +196,7 @@
     box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
 }
 
-/* Popovers & Context Menus */
+/* Popover & Context Menus */
 .nautilus-window popover,
 .nautilus-window popover.background,
 .nautilus-window menu {
@@ -263,9 +262,18 @@
     margin: 0;
 }
 
-.nautilus-window headerbar windowcontrols button:nth-child(1) { background: #febc2e; }
-.nautilus-window headerbar windowcontrols button:nth-child(2) { background: #28c840; }
-.nautilus-window headerbar windowcontrols button:nth-child(3) { background: #ff5f57; }
+/* Window Control Colors — GNOME right-side order: minimize, maximize, close */
+.nautilus-window headerbar windowcontrols button:nth-child(1) {
+    background: #febc2e;
+}
+
+.nautilus-window headerbar windowcontrols button:nth-child(2) {
+    background: #28c840;
+}
+
+.nautilus-window headerbar windowcontrols button:nth-child(3) {
+    background: #ff5f57;
+}
 
 .nautilus-window headerbar windowcontrols button:hover {
     filter: brightness(1.2);
@@ -292,197 +300,10 @@
     color: @zeo_text_white;
 }
 
-/* Column Headers */
+/* Column Headers & List Details */
 .nautilus-window columnview header button {
     background: transparent;
     color: @zeo_text_dim;
     font-size: 0.85em;
     font-weight: 600;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════════
- * ── Light Mode Overrides (Translucent Frosted Silver) ─────────────────────────
- * ═══════════════════════════════════════════════════════════════════════════════ */
-@media (prefers-color-scheme: light) {
-    .nautilus-window,
-    .nautilus-window.background,
-    .nautilus-window .background {
-        background-color: rgba(246, 246, 248, 0.72);
-        color: #1d1d1f;
-    }
-
-    .nautilus-window headerbar,
-    .nautilus-window .titlebar {
-        background-color: rgba(246, 246, 248, 0.76);
-        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-        color: #1d1d1f;
-    }
-
-    .nautilus-window headerbar button,
-    .nautilus-window .titlebar button {
-        color: #636366;
-    }
-
-    .nautilus-window headerbar button:hover,
-    .nautilus-window .titlebar button:hover {
-        background: rgba(0, 0, 0, 0.05);
-        color: #000000;
-    }
-
-    .nautilus-window headerbar button:active,
-    .nautilus-window headerbar button:checked,
-    .nautilus-window .titlebar button:active,
-    .nautilus-window .titlebar button:checked {
-        background: rgba(0, 0, 0, 0.10);
-        color: #000000;
-    }
-
-    .nautilus-window sidebar,
-    .nautilus-window .sidebar,
-    .nautilus-window .navigation-sidebar,
-    .nautilus-window navigation-sidebar {
-        background-color: rgba(238, 238, 242, 0.72);
-        border-right: 1px solid rgba(0, 0, 0, 0.06);
-        color: #636366;
-    }
-
-    .nautilus-window sidebar separator,
-    .nautilus-window .sidebar separator,
-    .nautilus-window .navigation-sidebar separator,
-    .nautilus-window navigation-sidebar separator {
-        background: rgba(0, 0, 0, 0.06);
-    }
-
-    .nautilus-window sidebar row,
-    .nautilus-window .sidebar row,
-    .nautilus-window .navigation-sidebar row,
-    .nautilus-window navigation-sidebar row,
-    .nautilus-window .sidebar-row {
-        color: #636366;
-    }
-
-    .nautilus-window sidebar row:hover,
-    .nautilus-window .sidebar row:hover,
-    .nautilus-window .navigation-sidebar row:hover,
-    .nautilus-window navigation-sidebar row:hover,
-    .nautilus-window .sidebar-row:hover {
-        background: rgba(0, 0, 0, 0.05);
-        color: #000000;
-    }
-
-    .nautilus-window sidebar row:selected,
-    .nautilus-window .sidebar row:selected,
-    .nautilus-window .navigation-sidebar row:selected,
-    .nautilus-window navigation-sidebar row:selected,
-    .nautilus-window .sidebar-row:selected {
-        background: rgba(0, 0, 0, 0.10);
-        color: #000000;
-    }
-
-    .nautilus-window .nautilus-grid-view,
-    .nautilus-window .nautilus-list-view,
-    .nautilus-window .view {
-        background-color: transparent;
-        background: transparent;
-        color: #1d1d1f;
-    }
-
-    .nautilus-window flowboxchild,
-    .nautilus-window .nautilus-grid-view flowboxchild {
-        color: #1d1d1f;
-    }
-
-    .nautilus-window flowboxchild:hover,
-    .nautilus-window .nautilus-grid-view flowboxchild:hover {
-        background: rgba(0, 0, 0, 0.05);
-        color: #000000;
-    }
-
-    .nautilus-window flowboxchild:selected,
-    .nautilus-window .nautilus-grid-view flowboxchild:selected {
-        background: rgba(0, 0, 0, 0.10);
-        color: #000000;
-        border: 1px solid rgba(0, 0, 0, 0.06);
-    }
-
-    .nautilus-window .nautilus-list-view row,
-    .nautilus-window .nautilus-grid-view .view-item {
-        color: #1d1d1f;
-    }
-
-    .nautilus-window .nautilus-list-view row:hover,
-    .nautilus-window .nautilus-grid-view .view-item:hover {
-        background: rgba(0, 0, 0, 0.05);
-        color: #000000;
-    }
-
-    .nautilus-window .nautilus-list-view row:selected,
-    .nautilus-window .nautilus-grid-view .view-item:selected {
-        background: rgba(0, 0, 0, 0.10);
-        color: #000000;
-        border: 1px solid rgba(0, 0, 0, 0.06);
-    }
-
-    .nautilus-window entry,
-    .nautilus-window searchentry,
-    .nautilus-window .searchbar {
-        background: rgba(0, 0, 0, 0.04);
-        border: 1px solid rgba(0, 0, 0, 0.06);
-        color: #1d1d1f;
-    }
-
-    .nautilus-window entry:focus,
-    .nautilus-window searchentry:focus {
-        border-color: rgba(0, 0, 0, 0.25);
-        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
-    }
-
-    .nautilus-window popover,
-    .nautilus-window popover.background,
-    .nautilus-window menu {
-        background: #ffffff;
-        background-color: #ffffff;
-        border: 1px solid rgba(0, 0, 0, 0.08);
-        color: #1d1d1f;
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.10);
-    }
-
-    .nautilus-window popover contents,
-    .nautilus-window popover > contents,
-    .nautilus-window popover menu,
-    .nautilus-window popover > menu,
-    .nautilus-window popover .menu {
-        background: #ffffff;
-        background-color: #ffffff;
-    }
-
-    .nautilus-window modelbutton {
-        color: #1d1d1f;
-    }
-
-    .nautilus-window modelbutton:hover {
-        background: rgba(0, 0, 0, 0.05);
-        color: #000000;
-    }
-
-    .nautilus-window .path-bar button,
-    .nautilus-window .nautilus-path-bar button {
-        color: #636366;
-    }
-
-    .nautilus-window .path-bar button:hover,
-    .nautilus-window .nautilus-path-bar button:hover {
-        background: rgba(0, 0, 0, 0.05);
-        color: #000000;
-    }
-
-    .nautilus-window .path-bar button:checked,
-    .nautilus-window .nautilus-path-bar button:checked {
-        background: rgba(0, 0, 0, 0.10);
-        color: #000000;
-    }
-
-    .nautilus-window columnview header button {
-        color: #8e8e93;
-    }
 }

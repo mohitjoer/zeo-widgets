@@ -2,8 +2,9 @@
 
 A collection of modern, beautiful GNOME Shell extensions featuring clean UI and interactive widgets.
 
-## Included Extensions
+## Included Extensions & Themes
 - **Zeo Monitor Widget** (`zeo-widgets@mohitjoer`): Floating monitoring card displaying CPU, Memory, Disk, and GPU usages.
+- **Zeo Panel & Shell Theme** (`zeo-panel-theme`): macOS-inspired dark monochrome GNOME Shell panel, workspace pill/dots, clock, and quick settings theme.
 - **Zeo File Manager Theme** (`zeo-file-manager-theme`): Finder-inspired GTK theme for Nautilus.
 - **Zeo Bluetooth Device** (`zeo-blutooth-device@mohitjoer`): Desktop widget showing connected Bluetooth devices and their battery levels.
 - **Zeo Notifications** (`zeo-notifications@mohitjoer`): Elegant notification banners for GNOME Shell.

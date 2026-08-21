@@ -35,7 +35,7 @@ function getColorPal(hex) {
 }
 
 /* ── Cairo ring painter ──────────────────────────────────────── */
-function _paintRing(cr, width, height, pct, pal) {
+function _paintRing(cr, width, height, pct, pal, isLight = false) {
     const size = Math.min(width, height);
     const cx = width / 2;
     const cy = height / 2;
@@ -47,7 +47,11 @@ function _paintRing(cr, width, height, pct, pal) {
 
     cr.setLineWidth(RING_STROKE);
     cr.setLineCap(Cairo.LineCap.ROUND);
-    cr.setSourceRGBA(1, 1, 1, 0.07);
+    if (isLight) {
+        cr.setSourceRGBA(0, 0, 0, 0.08);
+    } else {
+        cr.setSourceRGBA(1, 1, 1, 0.07);
+    }
     cr.arc(cx, cy, RING_RADIUS, 0, 2 * Math.PI);
     cr.stroke();
 
@@ -96,12 +100,13 @@ class RingCell {
     constructor(label, palette, iconName) {
         this._pct = 0;
         this._pal = palette;
+        this._isLight = false;
         this._drawingArea = new St.DrawingArea({ width: RING_SIZE, height: RING_SIZE });
         this._signalTracker = {};
         this._drawingArea.connectObject('repaint', (area) => {
             let cr = area.get_context();
             let [w, h] = area.get_surface_size();
-            _paintRing(cr, w, h, this._pct, this._pal);
+            _paintRing(cr, w, h, this._pct, this._pal, this._isLight);
             cr.$dispose();
         }, this._signalTracker);
 
@@ -144,6 +149,13 @@ class RingCell {
         this.actor.add_child(stack);
         this.actor.add_child(this._nameLabel);
         this.actor.add_child(this._detailLabel);
+    }
+
+    setTheme(isLight) {
+        this._isLight = isLight;
+        if (this._drawingArea) {
+            this._drawingArea.queue_repaint();
+        }
     }
 
     update(pct, detail, pal) {
@@ -340,6 +352,19 @@ class BluetoothWidget extends BaseWidget {
         });
     }
 
+    setTheme(isLight) {
+        this._isLight = isLight;
+        if (isLight) {
+            this.add_style_class_name('light-theme');
+        } else {
+            this.remove_style_class_name('light-theme');
+        }
+        const cells = Object.values(this._ringCells);
+        for (let cell of cells) {
+            if (cell) cell.setTheme(isLight);
+        }
+    }
+
     destroy() {
         if (this._updateLoopId) {
             GLib.Source.remove(this._updateLoopId);
@@ -378,9 +403,24 @@ export default class ZeoBluetoothDeviceExtension extends Extension {
         this._settings = this.getSettings();
         this._widget = new BluetoothWidget(this._settings);
         Main.layoutManager._backgroundGroup.add_child(this._widget);
+
+        this._desktopSettings = new Gio.Settings({ schema_id: 'org.gnome.desktop.interface' });
+        const updateThemeMode = () => {
+            const scheme = this._desktopSettings.get_string('color-scheme');
+            const isLight = (scheme === 'prefer-light' || scheme === 'default');
+            this._widget?.setTheme(isLight);
+        };
+        updateThemeMode();
+        this._desktopSettingsId = this._desktopSettings.connect('changed::color-scheme', updateThemeMode);
     }
 
     disable() {
+        if (this._desktopSettings && this._desktopSettingsId) {
+            this._desktopSettings.disconnect(this._desktopSettingsId);
+            this._desktopSettingsId = null;
+        }
+        this._desktopSettings = null;
+
         if (this._widget) {
             Main.layoutManager._backgroundGroup.remove_child(this._widget);
             this._widget.destroy();

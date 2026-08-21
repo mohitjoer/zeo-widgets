@@ -1,0 +1,603 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+ *  ZEO PANEL & SHELL THEME (Monochrome Dark Edition)
+ *  macOS-inspired clean dark aesthetic for GNOME Shell 45+ / 46+ / 50+
+ *  Palette: Strict Monochrome Dark (Black, Charcoal, Slate, Gray, Pure White)
+ * ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Typography & Global Shell Accent Defaults ────────────────────────────── */
+stage {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", "Cantarell", "Ubuntu", sans-serif;
+    font-size: 11pt;
+    color: #ffffff;
+    -st-accent-color: #ffffff;
+    -st-accent-fg-color: #0c0c0e;
+}
+
+/* Universal Button Focus / Selection (Override Ubuntu Red/Orange Accents) */
+.button:focus,
+.icon-button:focus,
+.slider-bin:focus {
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.35);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+ * 1. TOP PANEL
+ * ═══════════════════════════════════════════════════════════════════════════════ */
+
+#panel,
+#panel.solid,
+#panel.transparent-panel,
+#panel.unlock-screen,
+#panel.login-screen,
+stage #panel,
+stage #panel.transparent-panel,
+stage #panel.solid,
+stage #panelBox #panel {
+    background-color: rgba(12, 12, 14, 0.92);
+    background-gradient-direction: none;
+    font-weight: 600;
+    height: 32px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    transition-duration: 250ms;
+}
+
+/* Panel Buttons (Universal) */
+#panel .panel-button {
+    -natural-hpadding: 10px;
+    -minimum-hpadding: 6px;
+    font-weight: 600;
+    font-size: 0.95em;
+    color: #f0f0f2;
+    border-radius: 8px;
+    margin: 2px 2px;
+    border: none;
+    background-color: transparent;
+    box-shadow: none;
+    transition-duration: 150ms;
+}
+
+#panel .panel-button:hover,
+#panel .panel-button:focus {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.09);
+    box-shadow: none;
+}
+
+#panel .panel-button:active,
+#panel .panel-button:checked {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.16);
+    box-shadow: none;
+}
+
+#panel .panel-corner {
+    -panel-corner-radius: 0px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+ * 2. WORKSPACE INDICATOR (Pill & Dots)
+ * ═══════════════════════════════════════════════════════════════════════════════ */
+
+#panel .panel-button#panelActivities {
+    -natural-hpadding: 10px;
+    -minimum-hpadding: 8px;
+}
+
+#panel .panel-button#panelActivities StBoxLayout {
+    spacing: 6px;
+    padding: 0 2px;
+}
+
+/* Active workspace pill & inactive workspace dots */
+#panel .panel-button#panelActivities .workspace-dot {
+    border-radius: 999px;
+    min-width: 6px;
+    min-height: 6px;
+    background-color: rgba(255, 255, 255, 0.35);
+    transition-duration: 200ms;
+}
+
+#panel .panel-button#panelActivities .workspace-dot:active,
+#panel .panel-button#panelActivities .workspace-dot.active,
+#panel .panel-button#panelActivities .workspace-dot:checked {
+    min-width: 18px;
+    background-color: #ffffff;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+}
+
+#panel .panel-button#panelActivities:hover .workspace-dot {
+    background-color: rgba(255, 255, 255, 0.55);
+}
+
+#panel .panel-button#panelActivities:hover .workspace-dot:active,
+#panel .panel-button#panelActivities:hover .workspace-dot.active {
+    background-color: #ffffff;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+ * 3. CLOCK & DATE
+ * ═══════════════════════════════════════════════════════════════════════════════ */
+
+#panel .panel-button.clock-display,
+#panel .clock-display-box {
+    font-weight: 600;
+    font-size: 0.95em;
+    color: #f5f5f7;
+    letter-spacing: -0.1px;
+}
+
+#panel .clock {
+    font-weight: 600;
+    color: #ffffff;
+    padding: 0 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+ * 4. SYSTEM INDICATORS, APPINDICATORS & TRAY ICONS
+ * ═══════════════════════════════════════════════════════════════════════════════ */
+
+#panel .panel-status-indicators-box {
+    spacing: 6px;
+}
+
+#panel .system-status-icon {
+    icon-size: 1.05em;
+    color: #e5e5ea;
+    padding: 0 2px;
+    margin: 0;
+}
+
+#panel .panel-button:hover .system-status-icon {
+    color: #ffffff;
+}
+
+/* Quick settings status pill container in top bar */
+#panel .quick-settings-button,
+#panel #panelActivities,
+#panel .aggregate-menu {
+    border-radius: 8px;
+}
+
+/* Battery percentage label */
+#panel .power-status,
+#panel .power-status-label {
+    font-size: 0.88em;
+    font-weight: 600;
+    color: #d1d1d6;
+    margin-left: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+ * 5. MEDIA CONTROLS & MPRIS / SPOTIFY IN PANEL
+ * ═══════════════════════════════════════════════════════════════════════════════ */
+
+.spotify-controls-box,
+.spotify-controls-label,
+.mpris-controls,
+.mpris-label {
+    color: #f2f2f5;
+    font-weight: 500;
+    font-size: 0.9em;
+    spacing: 6px;
+}
+
+.spotify-controls-icon,
+.mpris-icon {
+    color: #ffffff;
+    icon-size: 1.1em;
+}
+
+.spotify-controls-button,
+.mpris-button {
+    border-radius: 6px;
+    padding: 2px 4px;
+    color: #e5e5ea;
+    transition-duration: 120ms;
+}
+
+.spotify-controls-button:hover,
+.mpris-button:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+ * 6. POPUPS, MENUS & QUICK SETTINGS (macOS Control Center Style - Dark)
+ * ═══════════════════════════════════════════════════════════════════════════════ */
+
+.popup-menu {
+    color: #ffffff;
+}
+
+.popup-menu-content {
+    background-color: rgba(18, 18, 22, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 10px;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), 0 2px 8px rgba(0, 0, 0, 0.4);
+    margin: 6px;
+}
+
+.popup-menu-item {
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 8px 12px;
+    spacing: 8px;
+    color: #e5e5ea;
+    transition-duration: 100ms;
+}
+
+.popup-menu-item:hover,
+.popup-menu-item:focus,
+.popup-menu-item:active {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.popup-menu-item:checked {
+    background-color: rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.popup-separator-menu-item {
+    background-color: rgba(255, 255, 255, 0.08);
+    height: 1px;
+    margin: 6px 4px;
+}
+
+/* Quick Settings Box */
+.quick-settings {
+    padding: 16px;
+    border-radius: 18px;
+}
+
+/* Top System Row Buttons (Battery, Screenshot, Settings, Lock, Power) */
+.quick-settings-system-item .icon-button,
+.quick-settings .icon-button,
+.quick-settings-system-item .power-item,
+.quick-settings .power-item {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    border-radius: 12px;
+    border: none;
+    box-shadow: none;
+}
+
+.quick-settings-system-item .icon-button:hover,
+.quick-settings .icon-button:hover,
+.quick-settings-system-item .power-item:hover,
+.quick-settings .power-item:hover {
+    background-color: rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+}
+
+.quick-settings-system-item .icon-button:active,
+.quick-settings .icon-button:active,
+.quick-settings-system-item .power-item:active,
+.quick-settings .power-item:active {
+    background-color: rgba(255, 255, 255, 0.24);
+    color: #ffffff;
+}
+
+/* Sliders (Volume, Brightness) */
+.slider,
+.quick-slider .slider {
+    height: 18px;
+    -barlevel-height: 4px;
+    -barlevel-background-color: rgba(255, 255, 255, 0.15);
+    -barlevel-active-background-color: #ffffff;
+    -barlevel-overdrive-color: rgba(255, 255, 255, 0.4);
+    -slider-handle-radius: 0.55em;
+    border-radius: 999px;
+    color: #ffffff;
+    background-color: transparent;
+}
+
+.quick-slider .slider-bin {
+    padding: 6px;
+    border-radius: 999px;
+}
+
+.quick-slider .slider-bin:focus,
+.quick-slider .slider-bin:focus:hover {
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.35);
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Quick Toggle Buttons (Standard) */
+.quick-toggle {
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: none;
+    transition-duration: 150ms;
+    min-height: 48px;
+    padding: 0 12px;
+}
+
+.quick-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+}
+
+.quick-toggle .quick-toggle-title {
+    font-weight: 600;
+    font-size: 0.95em;
+    color: #ffffff;
+}
+
+.quick-toggle .quick-toggle-subtitle {
+    font-size: 0.8em;
+    font-weight: normal;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.quick-toggle StIcon {
+    color: #ffffff;
+}
+
+/* Active Quick Toggle: Pure White High-Contrast Monochrome */
+.quick-toggle:checked {
+    background-color: #ffffff;
+    color: #0c0c0e;
+    font-weight: 700;
+    border: 1px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
+}
+
+.quick-toggle:checked .quick-toggle-title,
+.quick-toggle:checked .quick-toggle-subtitle,
+.quick-toggle:checked StIcon,
+.quick-toggle:checked StLabel {
+    color: #0c0c0e;
+}
+
+/* Quick Toggle with Menu (Wi-Fi, Bluetooth, Keyboard, etc.) */
+.quick-toggle-has-menu .quick-toggle:ltr {
+    border-radius: 12px 0 0 12px;
+}
+
+.quick-toggle-has-menu .quick-toggle:rtl {
+    border-radius: 0 12px 12px 0;
+}
+
+.quick-toggle-has-menu .quick-toggle-menu-button {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    border-radius: 0 12px 12px 0;
+    border: none;
+    box-shadow: none;
+    transition-duration: 150ms;
+}
+
+.quick-toggle-has-menu .quick-toggle-menu-button:hover {
+    background-color: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+}
+
+.quick-toggle-has-menu .quick-toggle-menu-button:focus {
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.35);
+}
+
+/* Active State for Menu Button */
+.quick-toggle-has-menu .quick-toggle-menu-button:checked,
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:hover,
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:active,
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:focus {
+    background-color: #e5e5ea;
+    color: #0c0c0e;
+    box-shadow: none;
+}
+
+.quick-toggle-has-menu .quick-toggle-menu-button:checked StIcon,
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:hover StIcon {
+    color: #0c0c0e;
+}
+
+.quick-toggle-has-menu .quick-toggle-separator {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.quick-toggle-has-menu:checked .quick-toggle-separator {
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+/* Submenu Headers */
+.quick-toggle-menu .header .icon.active {
+    background-color: #ffffff;
+    color: #0c0c0e;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+ * 7. CALENDAR & NOTIFICATION CENTER
+ * ═══════════════════════════════════════════════════════════════════════════════ */
+
+.datemenu-today-button {
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-weight: 700;
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.datemenu-today-button:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.calendar-month-header {
+    font-weight: 700;
+    color: #ffffff;
+    padding: 8px;
+}
+
+.calendar .calendar-month-header .calendar-month-label {
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.calendar-day-heading,
+.calendar .calendar-day-heading {
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 4px;
+}
+
+.calendar-day-base,
+.calendar .calendar-day {
+    border-radius: 999px;
+    font-weight: 500;
+    color: #e5e5ea;
+    transition-duration: 120ms;
+}
+
+.calendar-day-base:hover,
+.calendar .calendar-day:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+}
+
+.calendar-day-base.calendar-other-month,
+.calendar .calendar-day.calendar-other-month {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+/* Today & Selected Date in Dark Mode: Solid White Circle with Crisp JET BLACK Text */
+.calendar-day-base:selected,
+.calendar-day-base:active,
+.calendar-day-base.calendar-today,
+.calendar .calendar-day:selected,
+.calendar .calendar-day:active,
+.calendar .calendar-day.calendar-today,
+.calendar .calendar-day.calendar-today:hover,
+.calendar .calendar-day.calendar-today:selected,
+.calendar .calendar-day.calendar-today:active,
+.calendar .calendar-day.calendar-today StLabel,
+.calendar-today,
+.calendar-today StLabel,
+.calendar .calendar-today,
+.calendar .calendar-today StLabel {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    -st-accent-fg-color: #000000 !important;
+    font-weight: 800;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+/* Message / Notification items in calendar dropdown */
+.message-list-sections,
+.message-list-section,
+.message-list {
+    spacing: 8px;
+}
+
+.message {
+    background-color: #1c1c1e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 12px 14px;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.message:hover,
+.message:focus {
+    background-color: #242428;
+    border-color: rgba(255, 255, 255, 0.16);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.message-box {
+    spacing: 8px;
+}
+
+.message-title {
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.message-body,
+.message-secondary-bin {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.message-media-control {
+    color: #ffffff;
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.message-media-control:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+ * 8. ON-SCREEN DISPLAY (OSD) & MODAL DIALOGS
+ * ═══════════════════════════════════════════════════════════════════════════════ */
+
+.osd-window {
+    background-color: rgba(18, 18, 22, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    padding: 16px;
+    color: #ffffff;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6);
+}
+
+.modal-dialog {
+    background-color: rgba(20, 20, 24, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    padding: 24px;
+    color: #ffffff;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.7);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+ * 9. ZEO EXTENSIONS & NOTIFICATION BANNERS (Dark Mode)
+ * ═══════════════════════════════════════════════════════════════════════════════ */
+
+.zeo-sysmon-card {
+    background-color: rgba(20, 20, 22, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.zeo-sysmon-card .zeo-ring-pct {
+    color: #ffffff;
+}
+
+.zeo-sysmon-card .zeo-ring-icon {
+    color: #ffffff;
+}
+
+.zeo-sysmon-card .zeo-ring-name {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.zeo-sysmon-card .zeo-ring-detail {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.zeo-sysmon-card .zeo-no-device-text {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.notification-banner {
+    background-color: rgba(32, 32, 36, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    color: #ffffff;
+}
+
+.notification-banner .message-title {
+    color: #ffffff;
+}
+
+.notification-banner .message-body {
+    color: rgba(255, 255, 255, 0.8);
+}
+

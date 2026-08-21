@@ -1,15 +1,19 @@
-# Zeo File Manager Theme
+# Zeo File Manager Theme (Dark & Light)
 
-A macOS-inspired dark theme for Nautilus on GTK 4: compact toolbar controls, a graphite sidebar, blue Finder-like selection states, and softly rounded file tiles.
+A macOS Finder-inspired theme for Nautilus on GTK 4: compact toolbar controls, graphite sidebar, circular traffic light buttons (Red, Yellow, Green), and softly rounded file tiles with full support for both Dark and Light modes.
+
+## Variants
+
+- **Dynamic Theme** (`gtk.css`): Automatically adapts between Dark and Light mode depending on system preference.
+- **Dark Mode** (`gtk-dark.css`): Deep obsidian and graphite palette with translucent surfaces.
+- **Light Mode** (`gtk-light.css`): Frosted silver sidebar, clean white view surfaces, and crisp dark typography.
 
 ## Install
 
-Import the theme from your user GTK 4 configuration, then restart Nautilus:
+Import the theme from your user GTK 4 configuration (automatically configured when running `./setup.sh`):
 
 ```bash
 mkdir -p ~/.config/gtk-4.0
 printf '\n@import url("/home/mohit/code/zeo-widgets/zeo-file-manager-theme/gtk.css");\n' >> ~/.config/gtk-4.0/gtk.css
 nautilus -q
 ```
-
-The theme only changes GTK 4 applications that load your user `gtk.css`; it does not install or enable a GNOME Shell extension. Adjust the absolute path if you move this repository.
