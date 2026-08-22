@@ -2,8 +2,64 @@
 <schemalist>
   <schema id="org.gnome.shell.extensions.zeo-widgets" path="/org/gnome/shell/extensions/zeo-widgets/">
     <key name="update-interval" type="i">
-      <default>3</default>
+      <default>2</default>
       <summary>Update interval in seconds</summary>
+    </key>
+    <key name="panel-position" type="s">
+      <default>'right'</default>
+      <summary>Panel Position (left, center, right)</summary>
+    </key>
+    <key name="panel-box-index" type="i">
+      <default>0</default>
+      <summary>Panel Box Index</summary>
+    </key>
+    <key name="show-cpu" type="b">
+      <default>true</default>
+      <summary>Show CPU in top bar</summary>
+    </key>
+    <key name="show-memory" type="b">
+      <default>true</default>
+      <summary>Show Memory in top bar</summary>
+    </key>
+    <key name="show-gpu" type="b">
+      <default>true</default>
+      <summary>Show GPU in top bar</summary>
+    </key>
+    <key name="show-disk" type="b">
+      <default>true</default>
+      <summary>Show Disk in top bar</summary>
+    </key>
+    <key name="show-network" type="b">
+      <default>true</default>
+      <summary>Show Network in top bar</summary>
+    </key>
+    <key name="show-sensors" type="b">
+      <default>true</default>
+      <summary>Show Temperature/Sensors in top bar</summary>
+    </key>
+    <key name="compact-mode" type="b">
+      <default>false</default>
+      <summary>Compact indicator display mode</summary>
+    </key>
+    <key name="show-icons" type="b">
+      <default>true</default>
+      <summary>Show icons next to indicators</summary>
+    </key>
+    <key name="temp-unit" type="s">
+      <default>'celsius'</default>
+      <summary>Temperature Unit (celsius or fahrenheit)</summary>
+    </key>
+    <key name="show-desktop-widget" type="b">
+      <default>true</default>
+      <summary>Show system monitor card on the desktop</summary>
+    </key>
+    <key name="desktop-widget-x" type="i">
+      <default>0</default>
+      <summary>Desktop widget X coordinate</summary>
+    </key>
+    <key name="desktop-widget-y" type="i">
+      <default>0</default>
+      <summary>Desktop widget Y coordinate</summary>
     </key>
     <key name="pos-x" type="i">
       <default>40</default>
@@ -26,12 +82,20 @@
       <summary>Disk Color</summary>
     </key>
     <key name="igpu-color" type="s">
-      <default>'#33c759'</default>
+      <default>'#00d3ff'</default>
       <summary>Integrated GPU Color</summary>
     </key>
     <key name="dgpu-color" type="s">
       <default>'#b051de'</default>
       <summary>Discrete GPU Color</summary>
+    </key>
+    <key name="primary-disk" type="s">
+      <default>'/'</default>
+      <summary>Primary mount point for disk indicator</summary>
+    </key>
+    <key name="primary-net-iface" type="s">
+      <default>'auto'</default>
+      <summary>Primary network interface</summary>
     </key>
   </schema>
 </schemalist>

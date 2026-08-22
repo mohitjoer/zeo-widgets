@@ -1,20 +1,441 @@
-/* ── System Monitor Card (Dark Theme) ────────────────────────────── */
-.zeo-sysmon-card {
-    background-color: rgba(20, 20, 22, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 22px;
-    padding: 24px 28px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+/* ── Zeo System Monitor: Astra-style Top Bar & Rich Menu ───────── */
+
+/* ── Panel Indicator Pill ────────────────────────────────────────── */
+.zeo-panel-box {
+    spacing: 4px;
+    padding: 0 4px;
 }
 
-/* ── System Monitor Card (Light Theme) ───────────────────────────── */
-.zeo-sysmon-card.light-theme {
-    background-color: rgba(248, 248, 250, 0.88);
+.zeo-indicator-item {
+    spacing: 3px;
+    padding: 2px 4px;
+    border-radius: 6px;
+    transition-duration: 150ms;
+}
+
+.zeo-indicator-item:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.zeo-indicator-icon {
+    icon-size: 14px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.zeo-indicator-label {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #ffffff;
+    font-feature-settings: "tnum";
+    text-align: center;
+}
+
+/* Stable minimum widths to prevent layout shift / jumping when values change */
+.zeo-ind-percent .zeo-indicator-label {
+    min-width: 26px;
+    text-align: center;
+}
+
+.zeo-ind-temp .zeo-indicator-label {
+    min-width: 30px;
+    text-align: center;
+}
+
+.zeo-ind-net .zeo-indicator-label {
+    min-width: 96px;
+    text-align: center;
+}
+
+.zeo-indicator-sublabel {
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+    font-feature-settings: "tnum";
+}
+
+/* Light Theme in Panel */
+.light-theme .zeo-indicator-item:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+.light-theme .zeo-indicator-icon {
+    color: rgba(0, 0, 0, 0.7);
+}
+.light-theme .zeo-indicator-label {
+    color: #111111;
+}
+.light-theme .zeo-indicator-sublabel {
+    color: rgba(0, 0, 0, 0.55);
+}
+
+/* ── Rich Dropdown Popup Menu ────────────────────────────────────── */
+.zeo-monitor-menu {
+    min-width: 440px;
+    max-width: 500px;
+    padding: 10px 12px;
+    color: #ffffff;
+}
+
+/* ── Header Section ──────────────────────────────────────────────── */
+.zeo-menu-header {
+    padding: 6px 10px 10px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 8px;
+    spacing: 12px;
+}
+
+.zeo-menu-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.zeo-menu-subtitle {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.zeo-badge {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* ── Tab Switcher ────────────────────────────────────────────────── */
+.zeo-tab-bar {
+    spacing: 4px;
+    padding: 2px 4px 8px 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 10px;
+}
+
+.zeo-tab-btn {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    background-color: transparent;
+    border: 1px solid transparent;
+    transition-duration: 150ms;
+}
+
+.zeo-tab-btn:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.zeo-tab-btn.active {
+    color: #000000;
+    background-color: #ffffff;
+    font-weight: 700;
+}
+
+/* ── Content Cards ───────────────────────────────────────────────── */
+.zeo-card {
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    spacing: 8px;
+}
+
+.zeo-card-title {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #ffffff;
+    spacing: 6px;
+}
+
+.zeo-card-value {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.zeo-card-subtext {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── Progress & Gauge Bars (Monochrome) ─────────────────────────── */
+.zeo-progress-track {
+    background-color: rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
+    height: 6px;
+    min-height: 6px;
+}
+
+.zeo-progress-fill {
+    background-color: #ffffff;
+    border-radius: 4px;
+    height: 6px;
+    min-height: 6px;
+}
+
+.zeo-progress-fill-alt {
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
+    height: 6px;
+    min-height: 6px;
+}
+
+/* ── Core Grid ───────────────────────────────────────────────────── */
+.zeo-core-grid {
+    spacing: 6px;
+    margin-top: 4px;
+}
+
+.zeo-core-item {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    padding: 4px 6px;
+    spacing: 4px;
+}
+
+.zeo-core-label {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.zeo-core-val {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+/* ── Process / Data Tables ───────────────────────────────────────── */
+.zeo-table {
+    spacing: 3px;
+    margin-top: 4px;
+}
+
+.zeo-table-header {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.4);
+    padding: 2px 4px 4px 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.zeo-table-row {
+    padding: 3px 4px;
+    border-radius: 4px;
+    font-size: 11px;
+}
+
+.zeo-table-row:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.zeo-pid-col {
+    font-family: monospace;
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.45);
+    min-width: 45px;
+}
+
+.zeo-name-col {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.zeo-val-col {
+    font-family: monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: #ffffff;
+    text-align: right;
+    min-width: 50px;
+}
+
+/* ── Footer Actions Bar ─────────────────────────────────────────── */
+.zeo-menu-footer {
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 4px;
+    spacing: 8px;
+}
+
+.zeo-footer-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #ffffff;
+    transition-duration: 150ms;
+}
+
+.zeo-footer-btn:hover {
+    background-color: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* ── Light Mode Adjustments ──────────────────────────────────────── */
+.light-theme.zeo-monitor-menu,
+.light-theme .zeo-monitor-menu {
+    color: #111111;
+}
+
+.light-theme .zeo-menu-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.light-theme .zeo-menu-title {
+    color: #111111;
+}
+
+.light-theme .zeo-menu-subtitle {
+    color: rgba(0, 0, 0, 0.55);
+}
+
+.light-theme .zeo-badge {
+    background-color: rgba(0, 0, 0, 0.06);
     border: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+    color: rgba(0, 0, 0, 0.8);
 }
 
-/* ── Ring row & cells ────────────────────────────────────────── */
+.light-theme .zeo-tab-bar {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.light-theme .zeo-tab-btn {
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.light-theme .zeo-tab-btn:hover {
+    color: #111111;
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
+.light-theme .zeo-tab-btn.active {
+    color: #ffffff;
+    background-color: #111111;
+}
+
+.light-theme .zeo-card {
+    background-color: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.light-theme .zeo-card-title,
+.light-theme .zeo-card-value {
+    color: #111111;
+}
+
+.light-theme .zeo-card-subtext {
+    color: rgba(0, 0, 0, 0.55);
+}
+
+.light-theme .zeo-progress-track {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.light-theme .zeo-progress-fill {
+    background-color: #111111;
+}
+
+.light-theme .zeo-progress-fill-alt {
+    background-color: rgba(0, 0, 0, 0.45);
+}
+
+.light-theme .zeo-core-item {
+    background-color: rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.light-theme .zeo-core-label {
+    color: rgba(0, 0, 0, 0.55);
+}
+
+.light-theme .zeo-core-val {
+    color: #111111;
+}
+
+.light-theme .zeo-table-header {
+    color: rgba(0, 0, 0, 0.45);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.light-theme .zeo-table-row:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+.light-theme .zeo-pid-col {
+    color: rgba(0, 0, 0, 0.45);
+}
+
+.light-theme .zeo-name-col {
+    color: rgba(0, 0, 0, 0.85);
+}
+
+.light-theme .zeo-val-col {
+    color: #111111;
+}
+
+.light-theme .zeo-menu-footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.light-theme .zeo-footer-btn {
+    background-color: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    color: #111111;
+}
+
+.light-theme .zeo-footer-btn:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+/* ── Layout Spacing & Helper Classes ─────────────────────────────── */
+.zeo-split-row {
+    spacing: 8px;
+}
+
+.zeo-partition-list {
+    spacing: 6px;
+    margin-top: 4px;
+}
+
+.zeo-iface-list {
+    spacing: 4px;
+    margin-top: 4px;
+}
+
+.zeo-sensors-list {
+    spacing: 4px;
+    margin-top: 4px;
+}
+
+.zeo-core-row {
+    spacing: 6px;
+}
+
+.zeo-mt-4 {
+    margin-top: 4px;
+}
+
+/* ── Desktop System Monitor Card (5 Circular Gauges) ─────────────── */
+.zeo-sysmon-card,
+.zeo-desktop-card {
+    background-color: rgba(20, 20, 22, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 22px;
+    padding: 22px 28px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+}
+
 .zeo-ring-row {
     spacing: 20px;
 }
@@ -23,11 +444,10 @@
     spacing: 6px;
 }
 
-/* ── Ring labels (Dark Theme) ────────────────────────────────── */
 .zeo-ring-pct {
     font-family: "SF Pro Display", "Inter", "Cantarell", sans-serif;
     font-weight: 700;
-    font-size: 18px;
+    font-size: 17px;
     color: #ffffff;
 }
 
@@ -35,7 +455,7 @@
     font-family: "SF Pro Display", "Inter", "Cantarell", sans-serif;
     font-weight: 600;
     font-size: 12px;
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .zeo-ring-detail {
@@ -45,15 +465,26 @@
     color: rgba(255, 255, 255, 0.45);
 }
 
-/* ── Ring labels (Light Theme) ───────────────────────────────── */
-.zeo-sysmon-card.light-theme .zeo-ring-pct {
-    color: #1d1d1f;
+/* Light Mode Desktop Card */
+.light-theme.zeo-sysmon-card,
+.light-theme .zeo-sysmon-card,
+.light-theme.zeo-desktop-card,
+.light-theme .zeo-desktop-card {
+    background-color: rgba(245, 245, 247, 0.90);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    color: #111111;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
-.zeo-sysmon-card.light-theme .zeo-ring-name {
-    color: rgba(0, 0, 0, 0.75);
+.light-theme .zeo-ring-pct {
+    color: #111111;
 }
 
-.zeo-sysmon-card.light-theme .zeo-ring-detail {
+.light-theme .zeo-ring-name {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+.light-theme .zeo-ring-detail {
     color: rgba(0, 0, 0, 0.5);
 }
+

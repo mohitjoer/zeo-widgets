@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <g fill="#dfdfdf">
+    <!-- Pin connectors on 4 sides -->
+    <rect x="4.5" y="1" width="1.2" height="1.8" rx="0.4"/>
+    <rect x="7.4" y="1" width="1.2" height="1.8" rx="0.4"/>
+    <rect x="10.3" y="1" width="1.2" height="1.8" rx="0.4"/>
+
+    <rect x="4.5" y="13.2" width="1.2" height="1.8" rx="0.4"/>
+    <rect x="7.4" y="13.2" width="1.2" height="1.8" rx="0.4"/>
+    <rect x="10.3" y="13.2" width="1.2" height="1.8" rx="0.4"/>
+
+    <rect x="1" y="4.5" width="1.8" height="1.2" rx="0.4"/>
+    <rect x="1" y="7.4" width="1.8" height="1.2" rx="0.4"/>
+    <rect x="1" y="10.3" width="1.8" height="1.2" rx="0.4"/>
+
+    <rect x="13.2" y="4.5" width="1.8" height="1.2" rx="0.4"/>
+    <rect x="13.2" y="7.4" width="1.8" height="1.2" rx="0.4"/>
+    <rect x="13.2" y="10.3" width="1.8" height="1.2" rx="0.4"/>
+
+    <!-- Processor Substrate Frame & Silicon Die -->
+    <path fill-rule="evenodd" d="
+      M 3.8,2.8 C 3.25,2.8 2.8,3.25 2.8,3.8 L 2.8,12.2 C 2.8,12.75 3.25,13.2 3.8,13.2 L 12.2,13.2 C 12.75,13.2 13.2,12.75 13.2,12.2 L 13.2,3.8 C 13.2,3.25 12.75,2.8 12.2,2.8 Z
+      M 4,3.8 L 12,3.8 L 12,12.2 L 4,12.2 Z
+      M 5.3,5.3 L 10.7,5.3 C 11.03,5.3 11.3,5.57 11.3,5.9 L 11.3,10.1 C 11.3,10.43 11.03,10.7 10.7,10.7 L 5.3,10.7 C 4.97,10.7 4.7,10.43 4.7,10.1 L 4.7,5.9 C 4.7,5.57 4.97,5.3 5.3,5.3 Z
+    "/>
+  </g>
+</svg>
