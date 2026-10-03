@@ -429,7 +429,7 @@
 /* ── Desktop System Monitor Card (5 Circular Gauges) ─────────────── */
 .zeo-sysmon-card,
 .zeo-desktop-card {
-    background-color: rgba(20, 20, 22, 0.88);
+    background-color: rgba(20, 20, 22, 0.80);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 22px;
     padding: 22px 28px;
@@ -470,7 +470,7 @@
 .light-theme .zeo-sysmon-card,
 .light-theme.zeo-desktop-card,
 .light-theme .zeo-desktop-card {
-    background-color: rgba(245, 245, 247, 0.90);
+    background-color: rgba(245, 245, 247, 0.80);
     border: 1px solid rgba(0, 0, 0, 0.08);
     color: #111111;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);

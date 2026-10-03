@@ -211,7 +211,7 @@ stage #panelBox #panel {
 }
 
 .popup-menu-content {
-    background-color: rgba(18, 18, 22, 0.96);
+    background-color: rgba(18, 18, 22, 0.80);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     padding: 10px;
@@ -622,4 +622,18 @@ stage #panelBox #panel {
 .notification-banner .message-body {
     color: rgba(255, 255, 255, 0.8);
 }
+
+/* ── Tooltips & Labels (Solid Background) ────────────────────────────────── */
+.dash-label,
+.window-caption,
+.screenshot-ui-tooltip,
+.tooltip {
+    background-color: #1e1e24;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    border-radius: 8px;
+    padding: 6px 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.50);
+}
+
 

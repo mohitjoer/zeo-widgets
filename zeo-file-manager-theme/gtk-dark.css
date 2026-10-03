@@ -1,53 +1,89 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
  *  ZEO FILE MANAGER THEME (GTK 4 / Nautilus) - Dark Variant
  *  macOS-inspired Obsidian Glass Theme
+ *  Single unified background canvas across headerbar, sidebar, and content
  * ═══════════════════════════════════════════════════════════════════════════════ */
 
 @define-color window_bg_color #141418;
 @define-color window_fg_color #f3f4f6;
-@define-color headerbar_bg_color #18181d;
+@define-color headerbar_bg_color transparent;
 @define-color headerbar_fg_color #f3f4f6;
-@define-color sidebar_bg_color #141418;
+@define-color sidebar_bg_color transparent;
 @define-color sidebar_fg_color #9ca3af;
-@define-color view_bg_color #141418;
+@define-color view_bg_color transparent;
 @define-color view_fg_color #f3f4f6;
 @define-color popover_bg_color #1e1e24;
 @define-color popover_fg_color #f3f4f6;
 
-/* ── Window Frame & Base Canvas ───────────────────────────────────────────── */
+/* ── Window Frame & Unified Base Canvas ───────────────────────────────────── */
 window.nautilus-window,
 .nautilus-window {
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.50);
-    background-color: rgba(20, 20, 24, 0.76);
+    background-color: rgba(20, 20, 24, 0.80);
     color: #f3f4f6;
+
+    /* Override Libadwaita color variables for sub-panes to keep canvas unified */
+    --view-bg-color: transparent;
+    --sidebar-bg-color: transparent;
+    --sidebar-backdrop-color: transparent;
+    --secondary-sidebar-bg-color: transparent;
+    --secondary-sidebar-backdrop-color: transparent;
+    --headerbar-bg-color: transparent;
+    --headerbar-backdrop-color: transparent;
+    --headerbar-shade-color: transparent;
+    --headerbar-darker-shade-color: transparent;
+    --sidebar-shade-color: transparent;
+    --sidebar-border-color: transparent;
+    --secondary-sidebar-shade-color: transparent;
+    --secondary-sidebar-border-color: transparent;
+    --headerbar-border-color: transparent;
+    --shade-color: transparent;
 }
 
-/* Background layers - keep transparent so base window background shows cleanly */
+/* Background layers - completely transparent so single base window background shows cleanly */
 .nautilus-window .background,
 .nautilus-window navigation-view,
 .nautilus-window navigation-page,
 .nautilus-window adw-toolbar-view,
+.nautilus-window toolbarview,
+.nautilus-window toolbarview > .top-bar,
+.nautilus-window toolbarview > .bottom-bar,
+.nautilus-window toolbarview > .top-bar.raised,
+.nautilus-window toolbarview > .bottom-bar.raised,
 .nautilus-window adw-navigation-split-view,
+.nautilus-window adw-overlay-split-view,
+.nautilus-window navigation-split-view,
+.nautilus-window overlay-split-view,
+.nautilus-window paned,
+.nautilus-window .sidebar-pane,
+.nautilus-window .content-pane,
 .nautilus-window scrolledwindow,
 .nautilus-window scrolledwindow > viewport,
 .nautilus-window stack,
-.nautilus-window .view {
+.nautilus-window .view,
+.nautilus-window iconview,
+.nautilus-window columnview,
+.nautilus-window listview,
+.nautilus-window gridview {
     background: transparent;
     background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    border: none;
     color: #f3f4f6;
 }
 
-/* ── Dual Headerbars / Unified Top Bar ───────────────────────────────────── */
+/* ── Unified Headerbars / Titlebar ───────────────────────────────────────── */
 .nautilus-window headerbar,
 .nautilus-window .titlebar {
     min-height: 44px;
     padding: 0 10px;
-    background: rgba(24, 24, 29, 0.82);
-    background-color: rgba(24, 24, 29, 0.82);
+    background: transparent;
+    background-color: transparent;
     border: 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 0;
     box-shadow: none;
     color: #f3f4f6;
 }
@@ -93,31 +129,40 @@ window.nautilus-window,
 }
 
 /* ── Path Bar / Breadcrumbs ───────────────────────────────────────────────── */
+.nautilus-window .nautilus-pathbar,
 .nautilus-window .path-bar,
 .nautilus-window .nautilus-path-bar {
     margin: 0 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: none;
 }
 
+.nautilus-window .nautilus-path-button,
 .nautilus-window .path-bar button,
 .nautilus-window .nautilus-path-bar button {
     min-height: 28px;
     padding: 2px 10px;
     border-radius: 6px;
-    background: rgba(255, 255, 255, 0.05);
+    background: transparent;
     color: #f3f4f6;
     font-weight: 500;
     border: 0;
+    box-shadow: none;
 }
 
+.nautilus-window .nautilus-path-button:hover,
 .nautilus-window .path-bar button:hover,
 .nautilus-window .nautilus-path-bar button:hover {
-    background: rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.08);
     color: #ffffff;
 }
 
+.nautilus-window .nautilus-path-button.current-dir,
 .nautilus-window .path-bar button:checked,
 .nautilus-window .nautilus-path-bar button:checked {
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.14);
     color: #ffffff;
     font-weight: 600;
 }
@@ -126,22 +171,39 @@ window.nautilus-window,
 .nautilus-window sidebar,
 .nautilus-window .sidebar,
 .nautilus-window .navigation-sidebar,
-.nautilus-window navigation-sidebar {
+.nautilus-window navigation-sidebar,
+.nautilus-window places-sidebar,
+.nautilus-window .places-sidebar {
     padding: 8px;
-    background: rgba(20, 20, 24, 0.78);
-    background-color: rgba(20, 20, 24, 0.78);
-    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    background: transparent;
+    background-color: transparent;
+    border: 0;
+    border-right: 0;
+    box-shadow: none;
     color: #9ca3af;
 }
 
-/* Hide pane separator between sidebar and main content */
-.nautilus-window > contents > separator,
+/* Hide pane separators, split-view borders, shadows and dimming for seamless single background */
+.nautilus-window overlay-split-view > shadow,
+.nautilus-window navigation-view > shadow,
+.nautilus-window overlay-split-view > border,
+.nautilus-window navigation-view > border,
+.nautilus-window overlay-split-view > dimming,
+.nautilus-window navigation-view > dimming,
+.nautilus-window overlay-split-view > separator,
+.nautilus-window navigation-split-view > separator,
+.nautilus-window adw-navigation-split-view > separator,
+.nautilus-window adw-overlay-split-view > separator,
 .nautilus-window paned > separator,
-.nautilus-window adw-navigation-split-view > separator {
+.nautilus-window > contents > separator,
+.nautilus-window separator {
     min-width: 0;
     min-height: 0;
     background: transparent;
+    background-color: transparent;
+    background-image: none;
     border: 0;
+    box-shadow: none;
     opacity: 0;
 }
 
@@ -160,6 +222,7 @@ window.nautilus-window,
 .nautilus-window .sidebar row,
 .nautilus-window .navigation-sidebar row,
 .nautilus-window navigation-sidebar row,
+.nautilus-window .navigation-sidebar > row,
 .nautilus-window .sidebar-row {
     min-height: 32px;
     margin: 2px 4px;
@@ -172,6 +235,7 @@ window.nautilus-window,
 .nautilus-window .sidebar row:hover,
 .nautilus-window .navigation-sidebar row:hover,
 .nautilus-window navigation-sidebar row:hover,
+.nautilus-window .navigation-sidebar > row:hover,
 .nautilus-window .sidebar-row:hover {
     background: rgba(255, 255, 255, 0.07);
     color: #ffffff;
@@ -181,15 +245,26 @@ window.nautilus-window,
 .nautilus-window .sidebar row:selected,
 .nautilus-window .navigation-sidebar row:selected,
 .nautilus-window navigation-sidebar row:selected,
+.nautilus-window .navigation-sidebar > row:selected,
 .nautilus-window .sidebar-row:selected {
     background: rgba(255, 255, 255, 0.15);
     color: #ffffff;
     font-weight: 600;
 }
 
+/* ── Thin Subtle Dividing Line Between Sidebar & Content ─────────────────── */
+.nautilus-window .sidebar-pane:dir(ltr) {
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.nautilus-window .sidebar-pane:dir(rtl) {
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 /* ── Main View Surfaces (Grid / List) ─────────────────────────────────────── */
 .nautilus-window .nautilus-grid-view,
 .nautilus-window .nautilus-list-view,
+.nautilus-window .nautilus-network-view,
 .nautilus-window .view {
     background: transparent;
     color: #f3f4f6;
@@ -337,3 +412,24 @@ window.nautilus-window,
     font-size: 0.85em;
     font-weight: 600;
 }
+
+/* ── Tooltips (Solid Background) ──────────────────────────────────────────── */
+tooltip,
+tooltip.background,
+.tooltip {
+    padding: 6px 10px;
+    background: #1e1e24;
+    background-color: #1e1e24;
+    color: #f3f4f6;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.50);
+    opacity: 1;
+}
+
+tooltip > box,
+tooltip label,
+.tooltip label {
+    color: #f3f4f6;
+}
+
