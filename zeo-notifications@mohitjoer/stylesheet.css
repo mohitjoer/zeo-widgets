@@ -4,7 +4,7 @@
     background-color: rgba(32, 32, 36, 0.95) !important;
     border: 1px solid rgba(255, 255, 255, 0.12) !important;
     border-radius: 20px !important;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: none !important;
     margin-right: 14px !important;
     margin-top: 20px !important;
     padding: 8px 12px !important;
@@ -30,7 +30,7 @@
     background-color: rgba(250, 250, 252, 0.95) !important;
     border: 1px solid rgba(0, 0, 0, 0.1) !important;
     border-radius: 20px !important;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15) !important;
+    box-shadow: none !important;
     margin-right: 14px !important;
     margin-top: 20px !important;
     padding: 8px 12px !important;

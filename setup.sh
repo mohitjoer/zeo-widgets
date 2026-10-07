@@ -41,11 +41,46 @@ if which gsettings >/dev/null 2>&1; then
     fi
 fi
 
-# 4. Enable the extensions
-echo "[4/4] Enabling extensions..."
+# 4. Setup Theme Synchronizer Service & Autostart
+echo "[4/5] Setting up real-time Theme Synchronizer daemon..."
+mkdir -p "$HOME/.config/systemd/user"
+cat > "$HOME/.config/systemd/user/zeo-theme-sync.service" << EOF
+[Unit]
+Description=Zeo Theme Synchronizer (Python & TypeScript)
+After=gnome-session.target
+
+[Service]
+Type=simple
+ExecStart=$DIR/zeo-theme-sync/sync.sh
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target
+EOF
+
+mkdir -p "$HOME/.config/autostart"
+cat > "$HOME/.config/autostart/zeo-theme-sync.desktop" << EOF
+[Desktop Entry]
+Type=Application
+Name=Zeo Theme Synchronizer
+Exec=$DIR/zeo-theme-sync/sync.sh
+Hidden=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+EOF
+
+if which systemctl >/dev/null 2>&1; then
+    systemctl --user daemon-reload 2>/dev/null || true
+    systemctl --user enable --now zeo-theme-sync.service 2>/dev/null || true
+fi
+
+# 5. Enable the extensions
+echo "[5/5] Enabling extensions..."
 gnome-extensions enable zeo-widgets@mohitjoer
 gnome-extensions enable zeo-notifications@mohitjoer
 gnome-extensions enable zeo-blutooth-device@mohitjoer
 
 echo "=== Setup Complete! ==="
 echo "Note: If you are on Wayland and installing these for the very first time, you may need to log out and log back in."
+

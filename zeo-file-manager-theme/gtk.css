@@ -30,6 +30,9 @@ window.nautilus-window,
     --secondary-sidebar-border-color: transparent;
     --headerbar-border-color: transparent;
     --shade-color: transparent;
+    --accent-color: @window_fg_color;
+    --accent-bg-color: @window_fg_color;
+    --accent-fg-color: @window_bg_color;
 }
 
 /* Background layers - completely transparent so single base window background shows cleanly */

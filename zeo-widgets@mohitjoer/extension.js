@@ -1751,6 +1751,17 @@ export default class ZeoWidgetsExtension extends Extension {
             const isLight = (scheme === 'prefer-light' || scheme === 'default');
             this._indicator?.setTheme(isLight);
             this._desktopWidget?.setTheme(isLight);
+
+            try {
+                const userThemeSettings = new Gio.Settings({ schema_id: 'org.gnome.shell.extensions.user-theme' });
+                const currentTheme = userThemeSettings.get_string('name');
+                const targetTheme = isLight ? 'Zeo-Light' : 'Zeo-Dark';
+                if (currentTheme !== targetTheme && (currentTheme === 'Zeo-Dark' || currentTheme === 'Zeo-Light')) {
+                    userThemeSettings.set_string('name', targetTheme);
+                }
+            } catch (e) {
+                // user-theme extension not enabled or schema not found
+            }
         };
         updateThemeMode();
         this._desktopSettingsId = this._desktopSettings.connect('changed::color-scheme', updateThemeMode);

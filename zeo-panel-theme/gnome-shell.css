@@ -6,7 +6,7 @@
 
 /* ── Typography & Global Shell Accent Defaults ────────────────────────────── */
 stage {
-    font-family: "SF Pro Text", "SF Pro Display", "Inter", "Cantarell", "Ubuntu", sans-serif;
+    font-family: system-ui, -apple-system, Inter, Cantarell, Ubuntu, sans-serif;
     font-size: 11pt;
     color: #ffffff;
     -st-accent-color: #ffffff;
@@ -27,12 +27,19 @@ stage {
 #panel,
 #panel.solid,
 #panel.transparent-panel,
+#panel.panel-light-text,
+#panel.dark-panel,
+#panel.light-panel,
+#panel.contrasted-panel,
 #panel.unlock-screen,
 #panel.login-screen,
+#panel:overview,
 stage #panel,
 stage #panel.transparent-panel,
 stage #panel.solid,
-stage #panelBox #panel {
+stage #panel.panel-light-text,
+stage #panelBox #panel,
+#panelBox {
     background-color: rgba(12, 12, 14, 0.92);
     background-gradient-direction: none;
     font-weight: 600;
@@ -43,7 +50,10 @@ stage #panelBox #panel {
 }
 
 /* Panel Buttons (Universal) */
-#panel .panel-button {
+#panel .panel-button,
+#panel.panel-light-text .panel-button,
+#panel.transparent-panel .panel-button,
+stage #panel .panel-button {
     -natural-hpadding: 10px;
     -minimum-hpadding: 6px;
     font-weight: 600;
@@ -58,14 +68,22 @@ stage #panelBox #panel {
 }
 
 #panel .panel-button:hover,
-#panel .panel-button:focus {
+#panel .panel-button:focus,
+#panel.panel-light-text .panel-button:hover,
+#panel.panel-light-text .panel-button:focus,
+#panel.transparent-panel .panel-button:hover,
+#panel.transparent-panel .panel-button:focus {
     color: #ffffff;
     background-color: rgba(255, 255, 255, 0.09);
     box-shadow: none;
 }
 
 #panel .panel-button:active,
-#panel .panel-button:checked {
+#panel .panel-button:checked,
+#panel.panel-light-text .panel-button:active,
+#panel.panel-light-text .panel-button:checked,
+#panel.transparent-panel .panel-button:active,
+#panel.transparent-panel .panel-button:checked {
     color: #ffffff;
     background-color: rgba(255, 255, 255, 0.16);
     box-shadow: none;
@@ -90,7 +108,8 @@ stage #panelBox #panel {
 }
 
 /* Active workspace pill & inactive workspace dots */
-#panel .panel-button#panelActivities .workspace-dot {
+#panel .panel-button#panelActivities .workspace-dot,
+#panel.panel-light-text .panel-button#panelActivities .workspace-dot {
     border-radius: 999px;
     min-width: 6px;
     min-height: 6px;
@@ -100,7 +119,10 @@ stage #panelBox #panel {
 
 #panel .panel-button#panelActivities .workspace-dot:active,
 #panel .panel-button#panelActivities .workspace-dot.active,
-#panel .panel-button#panelActivities .workspace-dot:checked {
+#panel .panel-button#panelActivities .workspace-dot:checked,
+#panel.panel-light-text .panel-button#panelActivities .workspace-dot:active,
+#panel.panel-light-text .panel-button#panelActivities .workspace-dot.active,
+#panel.panel-light-text .panel-button#panelActivities .workspace-dot:checked {
     min-width: 18px;
     background-color: #ffffff;
     box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
@@ -120,17 +142,19 @@ stage #panelBox #panel {
  * ═══════════════════════════════════════════════════════════════════════════════ */
 
 #panel .panel-button.clock-display,
-#panel .clock-display-box {
+#panel.panel-light-text .panel-button.clock-display,
+#panel .clock-display-box,
+#panel .clock,
+#panel.panel-light-text .clock {
     font-weight: 600;
     font-size: 0.95em;
     color: #f5f5f7;
     letter-spacing: -0.1px;
 }
 
-#panel .clock {
-    font-weight: 600;
+#panel .panel-button.clock-display:hover .clock,
+#panel.panel-light-text .panel-button.clock-display:hover .clock {
     color: #ffffff;
-    padding: 0 4px;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -141,14 +165,20 @@ stage #panelBox #panel {
     spacing: 6px;
 }
 
-#panel .system-status-icon {
+#panel .system-status-icon,
+#panel StIcon,
+#panel .popup-menu-arrow,
+#panel .app-indicator-icon,
+#panel.panel-light-text .system-status-icon,
+#panel.panel-light-text StIcon {
     icon-size: 1.05em;
     color: #e5e5ea;
     padding: 0 2px;
     margin: 0;
 }
 
-#panel .panel-button:hover .system-status-icon {
+#panel .panel-button:hover .system-status-icon,
+#panel .panel-button:hover StIcon {
     color: #ffffff;
 }
 
@@ -159,9 +189,12 @@ stage #panelBox #panel {
     border-radius: 8px;
 }
 
-/* Battery percentage label */
+/* Battery percentage & labels */
 #panel .power-status,
-#panel .power-status-label {
+#panel .power-status-label,
+#panel StLabel,
+#panel .netSpeedLabel,
+#panel.panel-light-text .netSpeedLabel {
     font-size: 0.88em;
     font-weight: 600;
     color: #d1d1d6;
@@ -169,35 +202,31 @@ stage #panelBox #panel {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
- * 5. MEDIA CONTROLS & MPRIS / SPOTIFY IN PANEL
+ * 5. EXTENSIONS & MEDIA CONTROLS IN PANEL
  * ═══════════════════════════════════════════════════════════════════════════════ */
 
-.spotify-controls-box,
-.spotify-controls-label,
-.mpris-controls,
-.mpris-label {
+#panel #logo-menu-button,
+#panel .logo-menu-button,
+#panel .logo-menu-icon,
+#panel .logo-icon,
+#panel .app-indicator,
+#panel .indicator,
+#panel .astra-monitor-label,
+#panel .astra-monitor-box,
+#panel .astra-monitor-icon,
+#panel .spotify-controls-box,
+#panel .spotify-controls-label,
+#panel .spotify-controls-icon,
+#panel .spotify-controls-button,
+#panel .mpris-controls,
+#panel .mpris-label,
+#panel .mpris-icon,
+#panel .mpris-button {
     color: #f2f2f5;
-    font-weight: 500;
-    font-size: 0.9em;
-    spacing: 6px;
 }
 
-.spotify-controls-icon,
-.mpris-icon {
-    color: #ffffff;
-    icon-size: 1.1em;
-}
-
-.spotify-controls-button,
-.mpris-button {
-    border-radius: 6px;
-    padding: 2px 4px;
-    color: #e5e5ea;
-    transition-duration: 120ms;
-}
-
-.spotify-controls-button:hover,
-.mpris-button:hover {
+#panel .spotify-controls-button:hover,
+#panel .mpris-button:hover {
     color: #ffffff;
     background-color: rgba(255, 255, 255, 0.12);
 }
@@ -206,17 +235,33 @@ stage #panelBox #panel {
  * 6. POPUPS, MENUS & QUICK SETTINGS (macOS Control Center Style - Dark)
  * ═══════════════════════════════════════════════════════════════════════════════ */
 
-.popup-menu {
+.popup-menu,
+.popup-menu-boxpointer,
+.candidate-popup-boxpointer {
     color: #ffffff;
+    box-shadow: none !important;
+    background-color: transparent !important;
+    border-radius: 16px !important;
+    -arrow-border-radius: 16px;
+    -arrow-background-color: transparent;
+    -arrow-border-color: transparent;
+    -arrow-border-width: 0px;
+    -arrow-rise: 0px;
+    -boxpointer-gap: 6px;
 }
 
-.popup-menu-content {
-    background-color: rgba(18, 18, 22, 0.80);
+.popup-menu.panel-menu {
+    margin-bottom: 6px;
+}
+
+.popup-menu-content,
+.candidate-popup-content {
+    background-color: rgba(14, 14, 17, 0.90);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
+    border-radius: 16px !important;
     padding: 10px;
-    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), 0 2px 8px rgba(0, 0, 0, 0.4);
-    margin: 6px;
+    box-shadow: none !important;
+    margin: 0px !important;
 }
 
 .popup-menu-item {
@@ -272,36 +317,50 @@ stage #panelBox #panel {
 /* Quick Settings Box */
 .quick-settings {
     padding: 16px;
-    border-radius: 18px;
+    border-radius: 16px !important;
+    margin: 0px !important;
 }
 
-/* Top System Row Buttons (Battery, Screenshot, Settings, Lock, Power) */
+/* Top System Row Buttons (Screenshot, Settings, Lock, Power) - Clean without background */
 .quick-settings-system-item .icon-button,
-.quick-settings .icon-button,
-.quick-settings-system-item .power-item,
-.quick-settings .power-item {
-    background-color: rgba(255, 255, 255, 0.08);
+.quick-settings .icon-button {
+    background-color: transparent !important;
     color: #ffffff;
     border-radius: 12px;
-    border: none;
-    box-shadow: none;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .quick-settings-system-item .icon-button:hover,
-.quick-settings .icon-button:hover,
-.quick-settings-system-item .power-item:hover,
-.quick-settings .power-item:hover {
-    background-color: rgba(255, 255, 255, 0.16);
+.quick-settings .icon-button:hover {
+    background-color: rgba(255, 255, 255, 0.12) !important;
     color: #ffffff;
 }
 
 .quick-settings-system-item .icon-button:active,
-.quick-settings .icon-button:active,
-.quick-settings-system-item .power-item:active,
-.quick-settings .power-item:active {
-    background-color: rgba(255, 255, 255, 0.24);
+.quick-settings .icon-button:active {
+    background-color: rgba(255, 255, 255, 0.20) !important;
     color: #ffffff;
 }
+
+/* Battery / Charge Percentage Item - Clean without background card */
+.quick-settings-system-item .power-item,
+.quick-settings .power-item {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 4px;
+    color: #ffffff;
+}
+
+.quick-settings-system-item .power-item:hover,
+.quick-settings .power-item:hover,
+.quick-settings-system-item .power-item:active,
+.quick-settings .power-item:active {
+    background-color: transparent !important;
+    color: #ffffff;
+}
+
 
 /* Sliders (Volume, Brightness) */
 .slider,
@@ -361,20 +420,26 @@ stage #panelBox #panel {
     color: #ffffff;
 }
 
-/* Active Quick Toggle: Pure White High-Contrast Monochrome */
-.quick-toggle:checked {
-    background-color: #ffffff;
-    color: #0c0c0e;
+/* Active Quick Toggle: Pure White High-Contrast Monochrome (No Glow Border) */
+.quick-toggle:checked,
+button.quick-toggle:checked,
+.quick-toggle.button:checked {
+    background-color: #ffffff !important;
+    color: #0c0c0e !important;
     font-weight: 700;
-    border: 1px solid #ffffff;
-    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .quick-toggle:checked .quick-toggle-title,
 .quick-toggle:checked .quick-toggle-subtitle,
 .quick-toggle:checked StIcon,
-.quick-toggle:checked StLabel {
-    color: #0c0c0e;
+.quick-toggle:checked StLabel,
+button.quick-toggle:checked .quick-toggle-title,
+button.quick-toggle:checked .quick-toggle-subtitle,
+button.quick-toggle:checked StIcon,
+button.quick-toggle:checked StLabel {
+    color: #0c0c0e !important;
 }
 
 /* Quick Toggle with Menu (Wi-Fi, Bluetooth, Keyboard, etc.) */
@@ -404,19 +469,20 @@ stage #panelBox #panel {
     box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.35);
 }
 
-/* Active State for Menu Button */
+/* Active State for Menu Button (No Glow Border) */
 .quick-toggle-has-menu .quick-toggle-menu-button:checked,
 .quick-toggle-has-menu .quick-toggle-menu-button:checked:hover,
 .quick-toggle-has-menu .quick-toggle-menu-button:checked:active,
 .quick-toggle-has-menu .quick-toggle-menu-button:checked:focus {
-    background-color: #e5e5ea;
-    color: #0c0c0e;
-    box-shadow: none;
+    background-color: #e5e5ea !important;
+    color: #0c0c0e !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .quick-toggle-has-menu .quick-toggle-menu-button:checked StIcon,
 .quick-toggle-has-menu .quick-toggle-menu-button:checked:hover StIcon {
-    color: #0c0c0e;
+    color: #0c0c0e !important;
 }
 
 .quick-toggle-has-menu .quick-toggle-separator {
@@ -611,7 +677,7 @@ stage #panelBox #panel {
     background-color: rgba(32, 32, 36, 0.95);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 20px;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    box-shadow: none !important;
     color: #ffffff;
 }
 

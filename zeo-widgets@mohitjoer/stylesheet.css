@@ -53,18 +53,18 @@
     font-feature-settings: "tnum";
 }
 
-/* Light Theme in Panel */
+/* Light Theme in Panel (Ensure high contrast and readability on top panel) */
 .light-theme .zeo-indicator-item:hover {
-    background-color: rgba(0, 0, 0, 0.08);
+    background-color: rgba(255, 255, 255, 0.12);
 }
 .light-theme .zeo-indicator-icon {
-    color: rgba(0, 0, 0, 0.7);
+    color: rgba(255, 255, 255, 0.85);
 }
 .light-theme .zeo-indicator-label {
-    color: #111111;
+    color: #ffffff;
 }
 .light-theme .zeo-indicator-sublabel {
-    color: rgba(0, 0, 0, 0.55);
+    color: rgba(255, 255, 255, 0.6);
 }
 
 /* ── Rich Dropdown Popup Menu ────────────────────────────────────── */
